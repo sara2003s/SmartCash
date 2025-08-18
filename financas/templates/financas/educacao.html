@@ -1,0 +1,297 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Educação Financeira</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Header -->
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2" style="color: #212e3e;">Educação Financeira</h1>
+                <p class="text-gray-600">Aprenda a gerenciar suas finanças e construir riqueza</p>
+            </div>
+            {% if not is_pro %}
+            <button
+                class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded flex items-center">
+                <span class="mr-2">👑</span> Upgrade para Pro
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8">
+
+        <!-- Tabs -->
+        <div class="p-2 bg-gray-100 rounded-lg flex space-x-2 justify-between mb-6">
+            <button id="tab-basics" onclick="showTab('basics', this)"
+                class="flex-1 text-center py-2 px-4 rounded text-gray-700">Fundamentos</button>
+            <button id="tab-advanced" onclick="showTab('advanced', this)"
+                class="flex-1 text-center py-2 px-4 rounded text-gray-700">Conteúdo Pro</button>
+            <button id="tab-tools" onclick="showTab('tools', this)"
+                class="flex-1 text-center py-2 px-4 rounded text-gray-700">Ferramentas</button>
+        </div>
+
+        <!-- Conteúdo das Seções -->
+
+        <!-- Fundamentos -->
+        <div id="basics" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                {% for item in basic_content %}
+                <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+                    <div class="flex items-center mb-2">
+                        <div
+                            class="w-12 h-12 {{ item.color_class }} flex items-center justify-center rounded-lg mr-2 text-2xl">
+                            {% if item.icon == 'piggy-bank' %}🐖{% elif item.icon == 'target' %}🎯{% elif item.icon == 'bar-chart' %}📊{% elif item.icon == 'trending-up' %}📈{% endif %}
+                        </div>
+                        <h3 class="font-bold" style="color: #212e3e;">{{ item.title }}</h3>
+                    </div>
+                    <p class="text-gray-600 mb-2">{{ item.description }}</p>
+                    <ul class="list-disc list-inside mb-2">
+                        {% for point in item.content %}
+                        <li>{{ point }}</li>
+                        {% endfor %}
+                    </ul>
+                    <div class="flex space-x-2 mt-2">
+                        <!-- Botão "Ver Mais" com largura e altura fixas -->
+                        <button
+                            class="w-24 h-10 px-3 py-1 bg-[#212e3e] text-white rounded hover:bg-[#1b2632] transition">Ver
+                            Mais</button>
+                        <button
+                            class="px-3 py-1 border border-[#cacbcb] text-[#212e3e] rounded hover:bg-gray-100 transition flex items-center justify-center space-x-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="#212e3e" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="w-4 h-4 lucide lucide-play">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            <span>Aprender</span>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Conteúdo Pro -->
+        <div id="advanced" class="tab-content hidden">
+            <div class="grid md:grid-cols-2 gap-6">
+                {% for item in pro_content %}
+                <div class="bg-white p-4 rounded shadow relative {% if not is_pro %}opacity-50{% endif %}">
+                    {% if not is_pro %}
+                    <div
+                        class="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded z-10">
+                        <div class="text-center">
+                            🔒<p class="text-sm font-medium text-gray-600 mt-1">Conteúdo Pro</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center space-x-2">
+                            <div
+                                class="w-12 h-12 bg-purple-100 flex items-center justify-center rounded-lg text-purple-600 text-xl">
+                                {% if item.icon == 'bar-chart' %}📊{% elif item.icon == 'trending-up' %}�{% elif item.icon == 'calculator' %}🧮{% elif item.icon == 'file-text' %}📄{% endif %}
+                            </div>
+                            <h3 class="font-bold" style="color: #212e3e;">{{ item.title }}</h3>
+                        </div>
+                        <span
+                            class="bg-purple-100 text-purple-700 px-2 py-1 rounded flex items-center text-sm font-medium">
+                            👑 Pro
+                        </span>
+                    </div>
+                    <p class="text-gray-600 mb-2">{{ item.description }}</p>
+                    <ul class="list-disc list-inside mb-2">
+                        {% for topic in item.topics %}
+                        <li>{{ topic }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button
+                        class="w-full mt-2 rounded px-3 py-1 {% if is_pro %}bg-purple-500 text-white hover:bg-purple-600{% else %}border border-purple-500 text-purple-500 hover:bg-purple-50{% endif %}">
+                        {% if is_pro %}Acessar Conteúdo ▶️{% else %}Fazer Upgrade{% endif %}
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ferramentas -->
+        <div id="tools" class="tab-content hidden">
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg shadow-md border border-gray-200">
+                <h2 class="text-2xl font-bold mb-6" style="color: #212e3e;">Ferramentas Educacionais SmartCash</h2>
+                <p class="text-gray-600 mb-4">Explore nossa suíte de ferramentas projetadas para acelerar seu
+                    aprendizado financeiro. Cada ferramenta oferece simulações práticas e cálculos precisos para
+                    diferentes cenários financeiros.</p>
+
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center mb-1">
+                            <span class="text-blue-600 text-2xl mr-2">💡</span>
+                            <h4 class="font-bold text-blue-600">Simulações Interativas</h4>
+                        </div>
+                        <p class="text-gray-600 text-sm">Teste diferentes cenários e veja resultados em tempo real</p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center mb-1">
+                            <span class="text-green-600 text-2xl mr-2">📊</span>
+                            <h4 class="font-bold text-green-600">Cálculos Precisos</h4>
+                        </div>
+                        <p class="text-gray-600 text-sm">Algoritmos financeiros profissionais para resultados confiáveis
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex items-center mb-1">
+                            <span class="text-purple-600 text-2xl mr-2">🎯</span>
+                            <h4 class="font-bold text-purple-600">Estratégias Personalizadas</h4>
+                        </div>
+                        <p class="text-gray-600 text-sm">Recomendações baseadas no seu perfil e objetivos</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-gray-600 mt-6"></p>
+        <!-- Primeira Linha de Cartões (agora com espaçamento inferior) -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Calculadora de Juros Compostos -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                <div class="flex items-center mb-2">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full mr-3 text-2xl text-blue-600">🧮</div>
+                    <h3 class="font-bold text-gray-900 text-xl">Calculadora de Juros Compostos</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Descubra o poder dos juros compostos e calcule o crescimento do seu dinheiro ao longo do tempo</p>
+                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                    <li>Simulação de diferentes aportes mensais</li>
+                    <li>Comparação de taxas de juros</li>
+                    <li>Projeções de longo prazo</li>
+                </ul>
+                <button class="w-full mt-4 px-4 py-2 bg-[#212e3e] text-white rounded-md hover:bg-[#1b2632] transition">Usar Calculadora</button>
+            </div>
+
+            <!-- Simulador de Aposentadoria -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                <div class="flex items-center mb-2">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full mr-3 text-2xl text-green-600">🎯</div>
+                    <h3 class="font-bold text-gray-900 text-xl">Simulador de Aposentadoria</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Planeje sua aposentadoria e descubra quanto precisa guardar mensalmente</p>
+                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                    <li>Cálculo baseado na idade desejada</li>
+                    <li>Consideração da inflação</li>
+                    <li>Múltiplos cenários de renda</li>
+                </ul>
+                <button class="w-full mt-4 px-4 py-2 border  border-black-600 text-[#212e3e]-600 rounded-md hover:bg-[#f4f6ff] transition">Simular</button>
+            </div>
+
+            <!-- Calculadora de Financiamento -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                <div class="flex items-center mb-2">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full mr-3 text-2xl text-orange-600">💲</div>
+                    <h3 class="font-bold text-gray-900 text-xl">Calculadora de Financiamento</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Simule financiamentos imobiliários e compare diferentes condições</p>
+                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                    <li>Sistema SAC vs. Tabela Price</li>
+                    <li>Impacto da entrada</li>
+                    <li>Amortização extraordinária</li>
+                </ul>
+                <button class="w-full mt-4 px-4 py-2 border border-black-600 text-[#212e3e]-600 rounded-md hover:bg-[#f4f6ff] transition">Calcular</button>
+            </div>
+        </div>
+
+        <!-- Segunda Linha de Cartões -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Simulador de Investimentos -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                <div class="flex items-center mb-2">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full mr-3 text-2xl text-purple-600">📈</div>
+                    <h3 class="font-bold text-gray-900 text-xl">Simulador de Investimentos</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Compare diferentes produtos de investimento e suas rentabilidades</p>
+                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                    <li>Renda fixa vs. renda variável</li>
+                    <li>Simulação de diversificação</li>
+                    <li>Análise de risco-retorno</li>
+                </ul>
+                <button class="w-full mt-4 px-4 py-2 border border-black-600 text-[#212e3e]-600 rounded-md hover:bg-[#f4f6ff] transition">Simular</button>
+            </div>
+
+            <!-- Planejador de Reserva de Emergência -->
+            <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition">
+                <div class="flex items-center mb-2">
+                    <div class="w-12 h-12 flex items-center justify-center rounded-full mr-3 text-2xl text-red-600">⚠️</div>
+                    <h3 class="font-bold text-gray-900 text-xl">Planejador de Reserva de Emergência</h3>
+                </div>
+                <p class="text-gray-600 mb-4">Calcule o valor ideal para sua reserva de emergência pessoal</p>
+                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                    <li>Baseado no seu perfil de risco</li>
+                    <li>Considera gastos essenciais</li>
+                    <li>Estratégia de acumulação</li>
+                </ul>
+                <button class="w-full mt-4 px-4 py-2 border border-black-600 text-[#212e3e]-600 rounded-md hover:bg-[#f4f6ff] transition">Planejar</button>
+            </div>
+
+            <!-- Análise Avançada de Carteira - Pro -->
+            <div class="bg-white p-6 rounded-lg shadow-md relative {% if not is_pro %}opacity-50{% endif %}">
+                {% if not is_pro %}
+                <div class="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center rounded z-10">
+                    <div class="text-center">
+                        🔒<p class="text-sm font-medium text-gray-600 mt-1">Pro</p>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full mr-3 text-2xl text-purple-600">📊</div>
+                        <h3 class="font-bold text-gray-900 text-xl">Análise Avançada de Carteira</h3>
+                    </div>
+                    <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded flex items-center text-sm font-medium">👑 Pro</span>
+                </div>
+                <p class="text-gray-600 mb-4">Análise profissional completa dos seus investimentos com IA</p>
+                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                    <li>Análise de correlação de ativos</li>
+                    <li>Rebalanceamento automático</li>
+                    <li>Relatórios personalizados</li>
+                    <li>Alertas de oportunidades</li>
+                </ul>
+                <button class="w-full mt-2 rounded px-3 py-1 {% if is_pro %}bg-purple-500 text-white hover:bg-purple-600{% else %}border border-purple-500 text-purple-500 hover:bg-purple-50{% endif %}">
+                    {% if is_pro %}Acessar Conteúdo ▶️{% else %}Upgrade Pro{% endif %}
+                </button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <style>
+        .active-tab {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+
+    <script>
+        function showTab(tabId, element) {
+            // Esconde todo o conteúdo
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            // Remove o estilo da aba ativa de todos os botões
+            document.querySelectorAll('.py-2').forEach(btn => btn.classList.remove('active-tab'));
+
+            // Adiciona o estilo apenas ao botão clicado
+            element.classList.add('active-tab');
+        }
+
+        // Garante que a aba 'Fundamentos' seja a inicial ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('basics', document.getElementById('tab-basics'));
+        });
+    </script>
+
+</body>
+
+</html>

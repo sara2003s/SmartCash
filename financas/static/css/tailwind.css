@@ -1,0 +1,13 @@
+.icon-piggy-bank {
+    background-image: url("/financas/static/css/img/logo.png");
+    background-size: contain;   /* Mantém proporção */
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 40px;   /* ajuste conforme necessário */
+    height: 40px;
+    display: inline-block;
+}
+.login-logo {
+    text-align: center;
+    margin-bottom: 20px;
+}

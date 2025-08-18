@@ -1,0 +1,6 @@
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+def logout_usuario(request):
+    logout(request)
+    return redirect("/")  # volta para a home (index.html)

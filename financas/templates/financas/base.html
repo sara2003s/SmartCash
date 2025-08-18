@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartCash - Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-gray-900 text-white min-h-screen p-4">
+    <h1 class="text-2xl font-bold mb-6">SmartCash</h1>
+    <nav class="space-y-2">
+      <a href="{% url 'dashboard' %}" class="block p-2 rounded hover:bg-gray-700">📊 Dashboard</a>
+      <a href="{% url 'transacoes' %}" class="block p-2 rounded hover:bg-gray-700">💸 Transações</a>
+      <a href="#" class="block p-2 rounded hover:bg-gray-700">📑 Relatórios</a>
+      <a href="#" class="block p-2 rounded hover:bg-gray-700">⚙️ Configurações</a>
+      <a href="{% url 'logout' %}" class="block p-2 rounded bg-red-600 hover:bg-red-700">🚪 Sair</a>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo Principal -->
+  <main class="flex-1 p-6">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+</body>
+</html>
