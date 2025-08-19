@@ -25,11 +25,9 @@ urlpatterns = [
     path('', inicio, name='inicio'), 
     path("educacao/", views.educacao, name="educacao"),
     path('educacao/', include('financas.urls', namespace='educacao')),
-    path('', include('usuarios.urls')),
-    path("registrar/", views.registrar_usuario, name="register"),
-    path("login/", views.login_usuario, name="login"),
-    path("logout/", views.logout_usuario, name="logout"),
     path('dashboard/', views.dashboard, name='dashboard'),
-    
-
+    path('', include('financas.urls')),
+    path("login/", views.login_view, name="login"),
+    path('register/', views.register_view, name='register'),
+    path('logout/', views.logout_view, name='logout')
 ]

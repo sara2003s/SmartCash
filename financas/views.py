@@ -1,85 +1,110 @@
 from django.utils import timezone
-from .models import Transacao
+from financas.models import Transacao
 from django.db.models import Sum
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from usuarios.forms import FormularioLogin, RegistroForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')   # pega do formulário
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=email, password=password)  # aqui usamos o backend
+        if user is not None:
+            messages.success(request, "Login realizado com sucesso!")
+            login(request, user)
+        return redirect('financas:dashboard')
+    
+    return render(request, 'financas/index.html')
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Logout realizado com sucesso!")
+    return redirect("index")
+
+def register_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Esse usuário já existe.")
+            return redirect("register")
+
+        user = User.objects.create_user(username=username, email=email, password=password)
+        login(request, user)
+        messages.success(request, "Cadastro realizado com sucesso!")
+        return redirect("index")
+
+    return render(request, "financas/register.html")
 
 @login_required
 def dashboard(request):
-    hoje = timezone.now()
-
-    # ---- Gráfico de Barras (Evolução Financeira) ----
-    meses = []
-    receitas = []
-    gastos = []
-
-    for i in range(6, 0, -1):  # últimos 6 meses
-        mes = (hoje.month - i) % 12 or 12
-        ano = hoje.year if hoje.month - i > 0 else hoje.year - 1
-        meses.append(f"{mes:02d}/{ano}")
-
-        receita_mes = (
-            Transacao.objects.filter(tipo="receita", data__month=mes, data__year=ano)
-            .aggregate(total=Sum("valor"))["total"] or 0
-        )
-        gasto_mes = (
-            Transacao.objects.filter(tipo="gasto", data__month=mes, data__year=ano)
-            .aggregate(total=Sum("valor"))["total"] or 0
-        )
-
-        receitas.append(float(receita_mes))
-        gastos.append(float(gasto_mes))
-
-    # ---- Gráfico de Pizza (Distribuição de Gastos por Categoria) ----
-    gastos_categoria = (
-        Transacao.objects.filter(tipo="gasto", data__month=hoje.month)
-        .values("categoria")
-        .annotate(total=Sum("valor"))
-        .order_by("-total")
-    )
-
-    categorias = [g["categoria"] for g in gastos_categoria]
-    valores = [float(g["total"]) for g in gastos_categoria]
-
-    # ---- Recomendações Inteligentes (exemplo simples) ----
-    recomendacoes = []
-    if valores:
-        maior_categoria = categorias[0]
-        maior_valor = valores[0]
-        recomendacoes.append({
-            "tipo": "alerta",
-            "titulo": f"Atenção aos gastos com {maior_categoria}",
-            "descricao": f"Esta categoria representa {round(maior_valor / sum(valores) * 100, 1)}% dos seus gastos."
-        })
-
-    recomendacoes.append({
-        "tipo": "investimento",
-        "titulo": "Potencial de investimento identificado",
-        "descricao": "Com saldo disponível você poderia investir em CDB (~110% CDI)."
-    })
-
-    recomendacoes.append({
-        "tipo": "reserva",
-        "titulo": "Construa sua reserva de emergência",
-        "descricao": "Guarde pelo menos 6 meses de gastos como segurança."
-    })
-
-    context = {
-        # barras
-        "meses": meses,
-        "receitas": receitas,
-        "gastos": gastos,
-        # pizza
-        "categorias": categorias,
-        "valores": valores,
-        # recomendações
-        "recomendacoes": recomendacoes,
+    financial_data = {
+        "balance": 2500.00,   # saldo atual
+        "income": 4000.00,
+        "expenses": 1500.00,
+        "savings": 800.00,
+        "categories": [
+            {"name": "Alimentação", "percentage": 40, "color": "#f87171"},
+            {"name": "Transporte", "percentage": 25, "color": "#60a5fa"},
+            {"name": "Lazer", "percentage": 20, "color": "#fbbf24"},
+            {"name": "Educação", "percentage": 15, "color": "#34d399"},
+        ],
+        "recentTransactions": [
+            {"description": "Supermercado", "category": "Alimentação", "date": "2025-08-09", "amount": -150.00},
+            {"description": "Salário", "category": "Receita", "date": "2025-08-10", "amount": 4000.00},
+            {"description": "Uber", "category": "Transporte", "date": "2025-08-11", "amount": -45.00},
+            {"description": "Cinema", "category": "Lazer", "date": "2025-08-12", "amount": -60.00},
+        ]
     }
+
+    # Ordenar transações
+    transactions = sorted(financial_data["recentTransactions"], key=lambda x: x["date"])
+
+    # 👉 Saldo inicial customizado (por exemplo: mês passado)
+    saldo_inicial = 1000.00  
+
+    saldo = saldo_inicial
+    saldo_evolucao = [saldo]  # já começa com o inicial
+    labels = ["Saldo inicial"]
+
+    for tx in transactions:
+        saldo += tx["amount"]
+        saldo_evolucao.append(round(saldo, 2))
+        labels.append(tx["date"])
+
+    financial_data["saldo_inicial"] = saldo_inicial
+    financial_data["saldo_evolucao"] = saldo_evolucao
+    financial_data["saldo_labels"] = labels
+
+    context = {"financial_data": financial_data}
     return render(request, "financas/dashboard.html", context)
+
+@login_required
+def transacoes(request):
+    return render(request, "financas/transacoes.html")
+
+@login_required
+def categorias(request):
+    return render(request, "financas/categorias.html")
+
+@login_required
+def metas(request):
+    return render(request, "financas/metas.html")
+
+@login_required
+def conexoes_bancarias(request):
+    return render(request, "financas/conexoes_bancarias.html")
+
+@login_required
+def configuracoes(request):
+    return render(request, "financas/configuracoes.html")
 
 def inicio(request):
     planos = [
@@ -239,31 +264,3 @@ def educacao(request):
 
     return render(request, "financas/educacao.html", context)
 
-def registrar_usuario(request):
-    if request.method == "POST":
-        form = RegistroForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("login")  # redireciona pro login depois do cadastro
-    else:
-        form = RegistroForm()
-    return render(request, "register.html", {"form": form})
-
-def login_usuario(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect("dashboard")
-        else:
-            messages.error(request, "Usuário ou senha inválidos.")
-
-    return render(request, "usuarios/login.html")
-
-def logout_usuario(request):
-    logout(request)
-    return redirect('usuarios:login')

@@ -1,29 +1,80 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>SmartCash - Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SmartCash{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 flex">
+<body class="bg-gray-100 text-gray-900 flex">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-gray-900 text-white min-h-screen p-4">
-    <h1 class="text-2xl font-bold mb-6">SmartCash</h1>
-    <nav class="space-y-2">
-      <a href="{% url 'dashboard' %}" class="block p-2 rounded hover:bg-gray-700">📊 Dashboard</a>
-      <a href="{% url 'transacoes' %}" class="block p-2 rounded hover:bg-gray-700">💸 Transações</a>
-      <a href="#" class="block p-2 rounded hover:bg-gray-700">📑 Relatórios</a>
-      <a href="#" class="block p-2 rounded hover:bg-gray-700">⚙️ Configurações</a>
-      <a href="{% url 'logout' %}" class="block p-2 rounded bg-red-600 hover:bg-red-700">🚪 Sair</a>
-    </nav>
-  </aside>
+<aside class="fixed w-64 bg-[#f9fafb] shadow-md p-4 min-h-screen ">
+  <!-- Card do usuário -->
+  <div class="bg-white-50 p-4 rounded-xl shadow mb-6">
+    <h3 class="font-semibold text-gray-800">Sara Souza</h3>
+    <h3 class="font-semibold text-gray-800">{{ request.user.first_name }} {{ request.user.last_name }}</h3>
+    <p class="text-sm text-gray-500">{{ request.user.email }}</p>
+    <span class="mt-2 inline-block px-3 py-1 text-xs font-semibold text-purple-700 bg-purple-100 rounded-full">
+      🌟 Premium
+    </span>
+  </div>
 
-  <!-- Conteúdo Principal -->
-  <main class="flex-1 p-6">
-    {% block content %}
-    {% endblock %}
-  </main>
+  <!-- Menu -->
+  <h4 class="uppercase text-xs font-semibold text-black-400 mb-2">Menu</h4>
+  <nav class="flex flex-col gap-2">
+    <a href="{% url 'dashboard' %}" class=" flex items-center gap-2 p-2 rounded hover:bg-gray-100"">
+      <span>📊</span> Dashboard
+    </a>
+    <a href="{% url 'financas:metas' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+      <span>🎯</span> Metas
+    </a>
+    <a href="{% url 'financas:transacoes' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+      <span>💵</span> Transações
+    </a>
+    <a href="{% url 'financas:conexoes_bancarias' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+      <span>🏦</span> Conexões Bancárias
+    </a>
+    <a href="{% url 'financas:educacao' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+      <span>📚</span> Educação
+    </a>
+    <a href="{% url 'financas:configuracoes' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+      <span>⚙️</span> Configurações
+    </a>
+  </nav>
+  <!-- Parte de baixo: Linha separadora + Botão sair -->
+  <div class="p-4 ">
+    <hr class="border-t border-gray-200 mb-4">
+    <a href="{% url 'logout' %}"
+      class="w-full block text-center bg-[#272e3f] hover:bg-[#3f4c6b] text-white py-2 px-3 rounded">
+      Sair
+    </a>
+  </div>
+</aside>
+    <!-- Conteúdo principal -->
+    <div class="flex-1 flex flex-col min-h-screen">
+
+      <!-- Header fixo -->
+      <header class="bg-white shadow p-4 border-b flex items-center sticky top-0 z-50 ml-64">
+        <h1 class="text-xl font-bold">Dashboard</h1>
+        <div class="flex gap-4 items-center ml-auto">
+          <!-- Aqui entram os botões do lado direito -->
+          <button class="bg-white border border-blue-500 text-blue-600 px-3 py-1 rounded-full font-medium hover:bg-blue-50 transition">
+            Plano Premium
+        </button>
+          <button class="bg-blue-600 text-white px-3 py-1 rounded">Upload Extrato</button>
+        </div>
+      </header>
+
+        <!-- Área de conteúdo -->
+        <main class="ml-64 p-6">
+          
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
 
 </body>
 </html>

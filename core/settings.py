@@ -38,8 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'financas',
-    'usuarios', 
+    'financas', 
 ]
 
 MIDDLEWARE = [
@@ -131,7 +130,10 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = 'financas:inicio'
 LOGOUT_REDIRECT_URL = 'usuarios:login'
 LOGIN_REDIRECT_URL = '/dashboard/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/',
 
-AUTH_USER_MODEL = 'usuarios.UsuarioPersonalizado'
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  
+    'financas.backends.EmailBackend',              
+]
