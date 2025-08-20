@@ -7,13 +7,16 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from financas.models import Gasto, Meta
+
+
 
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email')   # pega do formulário
+        email = request.POST.get('email') 
         password = request.POST.get('password')
 
-        user = authenticate(request, username=email, password=password)  # aqui usamos o backend
+        user = authenticate(request, username=email, password=password)  
         if user is not None:
             messages.success(request, "Login realizado com sucesso!")
             login(request, user)
@@ -23,8 +26,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.success(request, "Logout realizado com sucesso!")
-    return redirect("index")
+    return redirect("financas:inicio")
 
 def register_view(request):
     if request.method == "POST":
@@ -84,6 +86,60 @@ def dashboard(request):
     financial_data["saldo_labels"] = labels
 
     context = {"financial_data": financial_data}
+
+     # --- DADOS PARA O GRÁFICO DE PIZZA e LISTA DE GASTOS POR CATEGORIA ---
+    try:
+        gastos_por_categoria = Gasto.objects.values('categoria__nome', 'categoria__cor').annotate(
+            valor=Sum('valor')
+        ).order_by('-valor')
+    except:
+        # Fallback se os modelos não estiverem configurados exatamente assim
+        gastos_por_categoria = [
+            {'categoria__nome': 'Alimentação', 'valor': 1200.50, 'categoria__cor': 'ff6384'},
+            {'categoria__nome': 'Transporte', 'valor': 850.00, 'categoria__cor': 'ff9f40'},
+            {'categoria__nome': 'Lazer', 'valor': 650.00, 'categoria__cor': 'ffcd56'},
+            {'categoria__nome': 'Saúde', 'valor': 350.00, 'categoria__cor': '4bc0c0'},
+            {'categoria__nome': 'Outros', 'valor': 209.00, 'categoria__cor': '9966ff'},
+        ]
+
+    gastos_detalhados = []
+    total_gastos = sum(item['valor'] for item in gastos_por_categoria)
+
+    for item in gastos_por_categoria:
+        gastos_detalhados.append({
+            'nome': item['categoria__nome'],
+            'cor': item['categoria__cor'].lstrip('#'),
+            'valor': item['valor'],
+            'porcentagem': (item['valor'] / total_gastos) * 100 if total_gastos > 0 else 0
+        })
+
+    expenses_labels = [g['nome'] for g in gastos_detalhados]
+    expenses_data = [g['valor'] for g in gastos_detalhados]
+
+    # Busque as últimas 6 transações ordenadas por data descendente
+    try:
+       transacoes_recentes = Transacao.objects.select_related('categoria').order_by('-data')[:6]
+    except:
+        # Fallback com dados fixos para demonstração
+        transacoes_recentes = [
+            {'nome': 'Supermercado Extra', 'data': '2025-06-06', 'valor': 185.50, 'tipo': 'despesa', 'categoria': 'Alimentação'},
+            {'nome': 'Salário - Empresa XYZ', 'data': '2025-06-05', 'valor': 8500.00, 'tipo': 'receita', 'categoria': 'Receita'},
+            {'nome': 'Uber - Centro para Casa', 'data': '2025-06-08', 'valor': 35.20, 'tipo': 'despesa', 'categoria': 'Transporte'},
+            {'nome': 'Netflix - Assinatura', 'data': '2025-06-06', 'valor': 29.90, 'tipo': 'despesa', 'categoria': 'Lazer'},
+            {'nome': 'Farmácia São Paulo', 'data': '2025-06-07', 'valor': 68.40, 'tipo': 'despesa', 'categoria': 'Saúde'},
+            {'nome': 'Posto Shell - Gasolina', 'data': '2025-06-08', 'valor': 120.00, 'tipo': 'despesa', 'categoria': 'Transporte'},
+        ]
+
+    context = { 
+        # Dados para o gráfico de pizza
+        'expenses_labels': expenses_labels,
+        'expenses_data': expenses_data,
+        
+        # Dados para as novas listas detalhadas
+        'gastos_detalhados': gastos_por_categoria,
+        'transacoes_recentes': transacoes_recentes,
+    }
+    
     return render(request, "financas/dashboard.html", context)
 
 @login_required

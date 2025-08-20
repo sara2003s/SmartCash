@@ -118,3 +118,13 @@
     margin-left: 250px; /* mesmo valor da largura da sidebar */
     padding: 20px;
 }
+
+select option:hover {
+    background-color: hwb(0 100% 0%); /* Cor azul claro (tailwind gray-50) */
+}
+
+/* Estiliza a opção que está selecionada/ativa */
+select option:checked {
+    background-color: #dbe9f2; /* Cor azul mais escuro (tailwind blue-50) */
+    color: #ffffff; /* Cor do texto */
+}
