@@ -272,8 +272,6 @@
                     Usuário
                 </button>
             </div>
-
-
             <!-- Formulário por Email -->
             <form id="form-email" method="post" action="{% url 'login' %}" class="space-y-4">
                 {% csrf_token %}
@@ -318,10 +316,12 @@
                 </button>
             </form>
 
-            <!-- Rodapé -->
-            <p class="text-center text-sm text-gray-500 mt-6">
-                Não tem conta?
-                <a href="{% url 'register' %}" class="text-blue-600 font-medium hover:underline">Cadastre-se</a>
+            <!-- Link para login -->
+            <p class="text-sm text-center mt-4">
+                Não tem uma conta?
+                <a href="#" onclick="fecharModal(); abrirRegister();" class="text-blue-600 hover:underline">
+                    Criar conta
+                </a>
             </p>
         </div>
     </div>
@@ -428,8 +428,6 @@
             const passwordField = document.getElementById(fieldId);
             const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordField.setAttribute('type', type);
-
-            // Opcional: Você pode mudar o ícone do SVG aqui se quiser
         }
 
         document.addEventListener("DOMContentLoaded", function () {
