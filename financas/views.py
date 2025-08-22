@@ -1,22 +1,21 @@
 from django.utils import timezone
-from financas.models import Transacao
+from financas.models import Transacao, Meta
 from django.db.models import Sum
-from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from financas.models import Gasto, Meta
-
+from .models import Meta
+from django.db.models import Sum, F
 
 
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST.get('email') 
+        email = request.POST.get('email')   
         password = request.POST.get('password')
 
-        user = authenticate(request, username=email, password=password)  
+        user = authenticate(request, username=email, password=password) 
         if user is not None:
             messages.success(request, "Login realizado com sucesso!")
             login(request, user)
@@ -26,7 +25,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("financas:inicio")
+    return redirect('inicio')  
 
 def register_view(request):
     if request.method == "POST":
@@ -45,101 +44,93 @@ def register_view(request):
 
     return render(request, "financas/register.html")
 
-@login_required
-def dashboard(request):
-    financial_data = {
-        "balance": 2500.00,   # saldo atual
-        "income": 4000.00,
-        "expenses": 1500.00,
-        "savings": 800.00,
-        "categories": [
-            {"name": "Alimentação", "percentage": 40, "color": "#f87171"},
-            {"name": "Transporte", "percentage": 25, "color": "#60a5fa"},
-            {"name": "Lazer", "percentage": 20, "color": "#fbbf24"},
-            {"name": "Educação", "percentage": 15, "color": "#34d399"},
-        ],
-        "recentTransactions": [
-            {"description": "Supermercado", "category": "Alimentação", "date": "2025-08-09", "amount": -150.00},
-            {"description": "Salário", "category": "Receita", "date": "2025-08-10", "amount": 4000.00},
-            {"description": "Uber", "category": "Transporte", "date": "2025-08-11", "amount": -45.00},
-            {"description": "Cinema", "category": "Lazer", "date": "2025-08-12", "amount": -60.00},
-        ]
-    }
+def metas(request):
+    metas_do_usuario = Meta.objects.filter(usuario=request.user).order_by('ativa', 'data_limite')
 
-    # Ordenar transações
-    transactions = sorted(financial_data["recentTransactions"], key=lambda x: x["date"])
+    metas_ativas_count = metas_do_usuario.filter(ativa=True, concluida=False).count()
+    metas_concluidas_count = metas_do_usuario.filter(concluida=True).count()
+    total_economizado = metas_do_usuario.aggregate(total=Sum('valor_atual'))['total'] or 0
 
-    # 👉 Saldo inicial customizado (por exemplo: mês passado)
-    saldo_inicial = 1000.00  
-
-    saldo = saldo_inicial
-    saldo_evolucao = [saldo]  # já começa com o inicial
-    labels = ["Saldo inicial"]
-
-    for tx in transactions:
-        saldo += tx["amount"]
-        saldo_evolucao.append(round(saldo, 2))
-        labels.append(tx["date"])
-
-    financial_data["saldo_inicial"] = saldo_inicial
-    financial_data["saldo_evolucao"] = saldo_evolucao
-    financial_data["saldo_labels"] = labels
-
-    context = {"financial_data": financial_data}
-
-     # --- DADOS PARA O GRÁFICO DE PIZZA e LISTA DE GASTOS POR CATEGORIA ---
-    try:
-        gastos_por_categoria = Gasto.objects.values('categoria__nome', 'categoria__cor').annotate(
-            valor=Sum('valor')
-        ).order_by('-valor')
-    except:
-        # Fallback se os modelos não estiverem configurados exatamente assim
-        gastos_por_categoria = [
-            {'categoria__nome': 'Alimentação', 'valor': 1200.50, 'categoria__cor': 'ff6384'},
-            {'categoria__nome': 'Transporte', 'valor': 850.00, 'categoria__cor': 'ff9f40'},
-            {'categoria__nome': 'Lazer', 'valor': 650.00, 'categoria__cor': 'ffcd56'},
-            {'categoria__nome': 'Saúde', 'valor': 350.00, 'categoria__cor': '4bc0c0'},
-            {'categoria__nome': 'Outros', 'valor': 209.00, 'categoria__cor': '9966ff'},
-        ]
-
-    gastos_detalhados = []
-    total_gastos = sum(item['valor'] for item in gastos_por_categoria)
-
-    for item in gastos_por_categoria:
-        gastos_detalhados.append({
-            'nome': item['categoria__nome'],
-            'cor': item['categoria__cor'].lstrip('#'),
-            'valor': item['valor'],
-            'porcentagem': (item['valor'] / total_gastos) * 100 if total_gastos > 0 else 0
-        })
-
-    expenses_labels = [g['nome'] for g in gastos_detalhados]
-    expenses_data = [g['valor'] for g in gastos_detalhados]
-
-    # Busque as últimas 6 transações ordenadas por data descendente
-    try:
-       transacoes_recentes = Transacao.objects.select_related('categoria').order_by('-data')[:6]
-    except:
-        # Fallback com dados fixos para demonstração
-        transacoes_recentes = [
-            {'nome': 'Supermercado Extra', 'data': '2025-06-06', 'valor': 185.50, 'tipo': 'despesa', 'categoria': 'Alimentação'},
-            {'nome': 'Salário - Empresa XYZ', 'data': '2025-06-05', 'valor': 8500.00, 'tipo': 'receita', 'categoria': 'Receita'},
-            {'nome': 'Uber - Centro para Casa', 'data': '2025-06-08', 'valor': 35.20, 'tipo': 'despesa', 'categoria': 'Transporte'},
-            {'nome': 'Netflix - Assinatura', 'data': '2025-06-06', 'valor': 29.90, 'tipo': 'despesa', 'categoria': 'Lazer'},
-            {'nome': 'Farmácia São Paulo', 'data': '2025-06-07', 'valor': 68.40, 'tipo': 'despesa', 'categoria': 'Saúde'},
-            {'nome': 'Posto Shell - Gasolina', 'data': '2025-06-08', 'valor': 120.00, 'tipo': 'despesa', 'categoria': 'Transporte'},
-        ]
-
-    context = { 
-        # Dados para o gráfico de pizza
-        'expenses_labels': expenses_labels,
-        'expenses_data': expenses_data,
-        
-        # Dados para as novas listas detalhadas
-        'gastos_detalhados': gastos_por_categoria,
-        'transacoes_recentes': transacoes_recentes,
+    context = {
+        'metas': metas_do_usuario,
+        'metas_ativas_count': metas_ativas_count,
+        'metas_concluidas_count': metas_concluidas_count,
+        'total_economizado': total_economizado
     }
     
+    return render(request, 'financas/metas.html', context)
+
+@login_required
+def dashboard(request):
+    entradas = Transacao.objects.filter(usuario=request.user, tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or 0
+    saidas = Transacao.objects.filter(usuario=request.user, tipo='saida').aggregate(Sum('valor'))['valor__sum'] or 0
+    saldo = entradas - saidas
+   
+    try:
+        meta = Meta.objects.filter(usuario=request.user).first()
+        if meta:
+            meta_valor = meta.valor_atual
+            meta_total = meta.valor_alvo
+        else:
+            meta_valor = 1000
+            meta_total = 2000
+    except Exception:
+        meta_valor = 1000
+        meta_total = 2000
+        
+    try:
+        gastos_por_categoria = Transacao.objects.filter(
+            usuario=request.user, 
+            tipo='saida'
+        ).values('categoria__nome', 'categoria__cor').annotate(
+            total_gasto=Sum('valor')
+        ).order_by('-total_gasto')
+
+        total_gastos = sum(item['total_gasto'] for item in gastos_por_categoria)
+        
+        gastos_detalhados = []
+        for item in gastos_por_categoria:
+            porcentagem = (item['total_gasto'] / total_gastos) * 100 if total_gastos > 0 else 0
+            gastos_detalhados.append({
+                'nome': item['categoria__nome'],
+                'cor': item['categoria__cor'], 
+                'valor': item['total_gasto'],
+                'porcentagem': porcentagem
+            })
+            
+        expenses_labels = [item['categoria__nome'] for item in gastos_por_categoria]
+        expenses_data = [item['total_gasto'] for item in gastos_por_categoria]
+
+    except Exception as e:
+        print(f"Erro ao buscar dados de gastos: {e}")
+        expenses_labels = ['Alimentação', 'Transporte', 'Lazer', 'Saúde', 'Outros']
+        expenses_data = [1200.50, 850.00, 650.00, 350.00, 209.00]
+        gastos_detalhados = [
+            {'nome': 'Alimentação', 'cor': '#F87171', 'valor': 1200.50, 'porcentagem': 37},
+            {'nome': 'Transporte', 'cor': '#60A5FA', 'valor': 850.00, 'porcentagem': 26},
+            {'nome': 'Lazer', 'cor': '#FBBE24', 'valor': 650.00, 'porcentagem': 20},
+            {'nome': 'Saúde', 'cor': '#34D399', 'valor': 350.00, 'porcentagem': 11},
+            {'nome': 'Outros', 'cor': '#8B5CF6', 'valor': 209.00, 'porcentagem': 6},
+        ]
+
+    try:
+        transacoes_recentes = Transacao.objects.filter(usuario=request.user).order_by('-data')[:6]
+    except Exception as e:
+        print(f"Erro ao buscar transações recentes: {e}")
+        transacoes_recentes = [
+        ]
+
+    context = {
+        'saldo': f"{saldo:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), 
+        'entradas': f"{entradas:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'saidas': f"{saidas:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'meta': f"{meta_valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'meta_total': f"{meta_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'expenses_labels': expenses_labels,
+        'expenses_data': expenses_data,
+        'gastos_detalhados': gastos_detalhados, # Use a lista de fallback no caso de erro
+        'transacoes_recentes': transacoes_recentes,
+    }
     return render(request, "financas/dashboard.html", context)
 
 @login_required
@@ -151,7 +142,7 @@ def categorias(request):
     return render(request, "financas/categorias.html")
 
 @login_required
-def metas(request):
+def metas_view(request):
     return render(request, "financas/metas.html")
 
 @login_required
