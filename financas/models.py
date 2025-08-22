@@ -54,3 +54,11 @@ class Gasto(models.Model):
 def __str__(self):
 		return f"{self.descricao} - {self.valor} em {self.data}"
 
+class Profile(models.Model):
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    cpf_rg = models.CharField(max_length=20, blank=True)
+    celular = models.CharField(max_length=15, blank=True)
+
+    def __str__(self):
+        return self.user.username

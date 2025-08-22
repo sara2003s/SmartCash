@@ -1,5 +1,4 @@
-from django.utils import timezone
-from financas.models import Transacao, Meta
+from financas.models import Transacao, Meta, Profile
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
@@ -7,19 +6,19 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Meta
-from django.db.models import Sum, F
-
 
 def login_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')   
         password = request.POST.get('password')
 
-        user = authenticate(request, username=email, password=password) 
+        user = authenticate(request, username=email, password=password, backend='django.contrib.auth.backends.ModelBackend')
+        
         if user is not None:
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, "Login realizado com sucesso!")
-            login(request, user)
-        return redirect('financas:dashboard')
+            return redirect('financas:dashboard')
+        messages.error(request, "E-mail ou senha inválidos.")
     
     return render(request, 'financas/index.html')
 
@@ -29,20 +28,59 @@ def logout_view(request):
 
 def register_view(request):
     if request.method == "POST":
+        nome_completo = request.POST.get("nome_completo")
+        cpf_rg = request.POST.get("cpf_rg")
+        celular = request.POST.get("celular")
         username = request.POST.get("username")
         email = request.POST.get("email")
         password = request.POST.get("password")
+        confirmar_senha = request.POST.get("confirmar_senha")
+
+        if password != confirmar_senha:
+            messages.error(request, "As senhas não coincidem.")
+            return redirect("financas:login")
+        
+        if not nome_completo or not username or not email or not password:
+            messages.error(request, "Todos os campos obrigatórios devem ser preenchidos.")
+            return redirect("financas:login")
 
         if User.objects.filter(username=username).exists():
-            messages.error(request, "Esse usuário já existe.")
-            return redirect("register")
+            messages.error(request, "Este nome de usuário já está em uso.")
+            return redirect("financas:login")
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Este e-mail já está em uso.")
+            return redirect("financas:login")
 
-        user = User.objects.create_user(username=username, email=email, password=password)
-        login(request, user)
-        messages.success(request, "Cadastro realizado com sucesso!")
-        return redirect("index")
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            
+            nomes = nome_completo.split(' ', 1)
+            user.first_name = nomes[0]
+            if len(nomes) > 1:
+                user.last_name = nomes[1]
+            user.save()
 
-    return render(request, "financas/register.html")
+            Profile.objects.create(
+                user=user,
+                cpf_rg=cpf_rg,
+                celular=celular
+            )
+
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, "Cadastro realizado com sucesso!")
+            return redirect("financas:configuracao_inicial")
+
+        except Exception as e:
+            messages.error(request, f"Ocorreu um erro no cadastro: {e}")
+            return redirect("financas:login")
+    
+    return redirect("financas:login")
+
+@login_required
+def configuracao_inicial(request):
+    # Esta página pode ter um formulário para o usuário preencher dados iniciais
+    return render(request, "financas/configuracao_inicial.html")
 
 def metas(request):
     metas_do_usuario = Meta.objects.filter(usuario=request.user).order_by('ativa', 'data_limite')

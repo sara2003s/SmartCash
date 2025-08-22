@@ -227,33 +227,40 @@
             </div>
         </div>
     </footer>
-    
-    </button>
+
     <!-- Modal Login -->
     <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
         onclick="fecharFora(event)">
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md relative" onclick="event.stopPropagation();">
-            
-            <!-- Botão fechar (X) -->
-            <button onclick="fecharModal()" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold">
+
+            <button onclick="fecharModal()"
+                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold">
                 &times;
             </button>
-    
-            <!-- Logo + Nome -->
+
             <div class="flex justify-center items-center space-x-2 mb-6">
                 <img src="{% static 'img/piggy-bank.png' %}" alt="Logo SmartCash" class="h-8 w-8">
                 <span class="text-2xl font-bold">
                     <span class="text-blue-600">Smart</span><span class="text-green-600">Cash</span>
                 </span>
             </div>
-    
-            <!-- Título -->
+
             <h2 class="text-2xl font-bold w-full mb-2">Fazer Login</h2>
             <p class="w-full text-gray-600 mb-4 text-sm">
                 Entre em sua conta para acessar seu dashboard financeiro
             </p>
-    
-            <!-- Abas -->
+            {% if messages %}
+            <div class="fixed bottom-4 right-4 z-50">
+                {% for message in messages %}
+                <div
+                    class="px-6 py-4 rounded-lg shadow-lg text-white font-semibold transition-all duration-300
+                    {% if 'error' in message.tags %}bg-red-600{% elif 'success' in message.tags %}bg-green-600{% else %}bg-gray-600{% endif %}">
+                    <p>{{ message }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="flex justify-center mb-6 space-x-2">
                 <button id="tab-email" class="px-20 py-2 rounded-lg font-medium text-sm bg-gray-900 text-white"
                     onclick="mostrarTab('email')">
@@ -265,25 +272,8 @@
                     Usuário
                 </button>
             </div>
-            <!-- Exibir mensagens de erro/sucesso -->
-            {% if messages %}
-            <div class="mb-4">
-                {% for message in messages %}
-                <div class="p-3 rounded-lg text-sm 
-                                        {% if message.tags == 'error' %}
-                                            bg-red-100 text-red-700
-                                        {% elif message.tags == 'success' %}
-                                            bg-green-100 text-green-700
-                                        {% else %}
-                                            bg-gray-100 text-gray-700
-                                        {% endif %}
-                                    ">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            
+
+
             <!-- Formulário por Email -->
             <form id="form-email" method="post" action="{% url 'login' %}" class="space-y-4">
                 {% csrf_token %}
@@ -305,11 +295,11 @@
                     Entrar
                 </button>
             </form>
-    
+
             <!-- Formulário por Usuário -->
             <form id="form-usuario" method="post" action="{% url 'login' %}" class="space-y-4 hidden">
                 {% csrf_token %}
-                
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
                     <input type="text" name="username" required
@@ -327,7 +317,7 @@
                     Entrar
                 </button>
             </form>
-    
+
             <!-- Rodapé -->
             <p class="text-center text-sm text-gray-500 mt-6">
                 Não tem conta?
@@ -338,11 +328,11 @@
     <!-- MODAL CADASTRO-->
     <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-    
+
             <!-- Botão fechar -->
             <button onclick="fecharRegister()"
                 class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
-    
+
             <!-- Logo -->
             <div class="flex items-center justify-center mb-4">
                 <img src="{% static 'img/piggy-bank.png' %}" alt="Logo SmartCash" class="h-8 w-8 mr-2">
@@ -350,32 +340,61 @@
                     <span class="text-blue-600">Smart</span><span class="text-green-600">Cash</span>
                 </h1>
             </div>
-    
+
             <h2 class="text-xl font-bold w-full mb-2">Criar Conta</h2>
             <p class="w-full text-sm mb-4">Crie sua conta gratuita e comece a organizar suas finanças</p>
-    
+
             <!-- Formulário Cadastro -->
-            <form>
-                <input type="text" placeholder="Nome completo" class="w-full border rounded px-3 py-2 mb-3">
+            <form method="post" action="{% url 'financas:register' %}">
+                {% csrf_token %}
+                <input type="text" name="nome_completo" placeholder="Nome completo"
+                    class="w-full border rounded px-3 py-2 mb-3">
                 <div class="flex space-x-2 mb-3">
-                    <input type="text" placeholder="CPF/RG" class="w-1/2 border rounded px-3 py-2">
-                    <input type="text" placeholder="Celular" class="w-1/2 border rounded px-3 py-2">
+                    <input type="text" name="cpf_rg" placeholder="CPF/RG" class="w-1/2 border rounded px-3 py-2">
+                    <input type="text" name="celular" placeholder="Celular" class="w-1/2 border rounded px-3 py-2">
                 </div>
-                <input type="text" placeholder="Nome de usuário" class="w-full border rounded px-3 py-2 mb-3">
-                <input type="email" placeholder="Email" class="w-full border rounded px-3 py-2 mb-3">
-                <input type="password" placeholder="Senha" class="w-full border rounded px-3 py-2 mb-3">
-                <input type="password" placeholder="Confirmar senha" class="w-full border rounded px-3 py-2 mb-3">
-    
+                <input type="text" name="username" placeholder=" Nome de usuário"
+                    class="w-full border rounded px-3 py-2 mb-3">
+                <input type="email" name="email" placeholder="Email" class="w-full border rounded px-3 py-2 mb-3">
+                <div class="relative mb-3">
+                    <input type="password" name="password" id="register-password" placeholder="Senha"
+                        class="w-full border rounded px-3 py-2 pr-10">
+                    <button type="button" onclick="togglePasswordVisibility('register-password')"
+                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.577 3.01 9.964 7.822a.99.99 0 010 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.577-3.01-9.964-7.822z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="relative mb-3">
+                    <input type="password" name="confirmar_senha" id="register-confirm-password"
+                        placeholder="Confirmar senha" class="w-full border rounded px-3 py-2 pr-10">
+                    <button type="button" onclick="togglePasswordVisibility('register-confirm-password')"
+                        class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.577 3.01 9.964 7.822a.99.99 0 010 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.577-3.01-9.964-7.822z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                </div>
+
                 <div class="flex items-center mb-3">
                     <input type="checkbox" class="mr-2">
                     <span class="text-sm">Aceito os <a href="#" class="text-blue-600">termos de uso</a> e política de
                         privacidade</span>
                 </div>
-    
-                <button class="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-2 rounded">Criar
+
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-green-600 text-white py-2 rounded">Criar
                     Conta</button>
             </form>
-    
+
             <!-- Link para login -->
             <p class="text-sm text-center mt-4">
                 Já tem uma conta?
@@ -387,8 +406,7 @@
         </div>
     </div>
 
-    
-    <!-- Script Tabs -->
+
     <script>
         function abrirModal() {
             document.getElementById("loginModal").classList.remove("hidden");
@@ -398,44 +416,28 @@
             document.getElementById("loginModal").classList.add("hidden");
         }
 
-        // Fechar clicando fora da caixinha branca
-        function fecharFora(event) {
-            if (event.target.id === "loginModal") {
-                fecharModal();
-            }
-        }
         function abrirRegister() {
             document.getElementById("registerModal").classList.remove("hidden");
-            document.getElementById("loginModal").classList.add("hidden");
         }
+
         function fecharRegister() {
             document.getElementById("registerModal").classList.add("hidden");
         }
 
-        function mostrarTab(tab) {
-            // esconder ambos
-            document.getElementById('form-email').classList.add('hidden');
-            document.getElementById('form-usuario').classList.add('hidden');
-            // resetar estilos
-            document.getElementById('tab-email').classList.remove('bg-gray-900', 'text-white');
-            document.getElementById('tab-email').classList.add('border', 'border-gray-300', 'text-gray-800');
-            document.getElementById('tab-usuario').classList.remove('bg-gray-900', 'text-white');
-            document.getElementById('tab-usuario').classList.add('border', 'border-gray-300', 'text-gray-800');
+        function togglePasswordVisibility(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
 
-            if (tab === 'email') {
-                document.getElementById('form-email').classList.remove('hidden');
-                document.getElementById('tab-email').classList.add('bg-gray-900', 'text-white');
-                document.getElementById('tab-email').classList.remove('border', 'border-gray-300', 'text-gray-800');
-            } else {
-                document.getElementById('form-usuario').classList.remove('hidden');
-                document.getElementById('tab-usuario').classList.add('bg-gray-900', 'text-white');
-                document.getElementById('tab-usuario').classList.remove('border', 'border-gray-300', 'text-gray-800');
-            }
+            // Opcional: Você pode mudar o ícone do SVG aqui se quiser
         }
-        <!-- Script para abrir automaticamente o modal se houver mensagem -->
-            document.addEventListener("DOMContentLoaded", function () {
-                document.getElementById("loginModal").classList.remove("hidden");
-            });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            {% if messages %}
+            abrirModal();
+            {% endif %}
+
+        });
 
     </script>
 

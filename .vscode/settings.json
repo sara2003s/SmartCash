@@ -1,5 +1,7 @@
 {
   "python.analysis.typeCheckingMode": "basic",
-  "css.lint.unknownAtRules": "ignore"
+  "css.lint.unknownAtRules": "ignore",
+  "python-envs.pythonProjects": [],
+  "python-envs.defaultEnvManager": "ms-python.python:system"
 }
 

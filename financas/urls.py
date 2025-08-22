@@ -16,6 +16,7 @@ urlpatterns = [
     path("conexoes_bancarias/", views.conexoes_bancarias, name="conexoes_bancarias"),
     path("educacao/", views.educacao, name="educacao"),
     path("configuracoes/", views.configuracoes, name="configuracoes"),
+    path('configuracao-inicial/', views.configuracao_inicial, name='configuracao_inicial'),    
 
 ]
 
