@@ -1,0 +1,78 @@
+{% extends "financas/base.html" %}
+{% block vars %}{% with sem_header=True %}{% endwith %}{% endblock %}
+{% load static %}
+
+{% block title %}Nova Conexão{% endblock %}
+
+{% block content %}
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<div class="container py-4 px-4">
+    <div class="flex items-center">
+        <a href="{% url 'financas:conexoes_bancarias' %}" class="text-gray-600 font-medium flex items-center gap-2">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            Voltar
+        </a>
+        <h1 class="text-2xl font-bold text-gray-800 flex-1 text-center">
+            Conectar Conta Bancária
+        </h1>
+    </div>
+</div>
+<div class="container mx-auto py-1 px-4 flex justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full">
+        <div class="flex items-center gap-4 mb-4">
+            <i data-lucide="building-2" class="text-blue-600 w-10 h-10"></i>
+            <div>
+                <h1 class="text-xl font-bold text-gray-800">Informações da Conta</h1>
+                <p class="text-sm text-gray-600">Preencha os dados para estabelecer a conexão segura</p>
+            </div>
+        </div>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="mb-6">
+                <label for="banco" class="block text-sm font-medium text-gray-700 mb-1">Banco</label>
+                <select id="banco" name="banco" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                    <option value="">Selecione seu banco</option>
+                    <option value="Banco do Brasil">Banco do Brasil</option>
+                    <option value="Caixa Econômica Federal">Caixa Econômica Federal</option>
+                    <option value="Itaú">Itaú</option>
+                    <option value="Bradesco">Bradesco</option>
+                    <option value="Nubank">Nubank</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="agencia" class="block text-sm font-medium text-gray-700 mb-1">Agência</label>
+                    <input type="text" id="agencia" name="agencia" placeholder="0000"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2">
+                </div>
+                <div>
+                    <label for="numero_conta" class="block text-sm font-medium text-gray-700 mb-1">Número da
+                        Conta</label>
+                    <input type="text" id="numero_conta" name="numero_conta" placeholder="00000-0"
+                        class="w-full rounded-md border border-gray-300 px-3 py-2">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-8">
+                <a href="{% url 'financas:nova_conexao' %}"
+                    class="px-6 py-2 border border-gray-300 rounded-md font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit"
+                    class="px-6 py-2 rounded-md bg-[#282e3f] text-white font-semibold hover:bg-[#404965] transition-colors">
+                    Conectar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Ativa os ícones do Lucide
+    lucide.createIcons();
+</script>
+
+{% endblock %}

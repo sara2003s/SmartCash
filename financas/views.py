@@ -219,7 +219,20 @@ def metas_view(request):
 @login_required
 def conexoes_bancarias(request):    
     return render(request, "financas/conexoes_bancarias.html",{
-        "sem_header": True
+        "sem_header": True        
+    })
+
+
+@login_required
+def nova_conexao(request):
+    return render(request, "financas/nova_conexao.html",{
+        "sem_header": True 
+    })
+
+@login_required
+def conectar_conta(request):
+    return render(request, "financas/conectar_conta.html",{
+        "sem_header": True 
     })
 
 @login_required

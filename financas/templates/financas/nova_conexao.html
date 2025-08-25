@@ -1,0 +1,63 @@
+{% extends "financas/base.html" %}
+{% block vars %}{% with sem_header=True %}{% endwith %}{% endblock %}
+{% load static %}
+
+{% block title %}Nova Conexão{% endblock %}
+
+{% block content %}
+<script src="https://unpkg.com/lucide@latest"></script>
+<!-- Título -->
+<div class="container py-4 px-4">
+    <div class="flex items-center gap-4 mb-10">
+        <a href="{% url 'financas:conexoes_bancarias' %}" class="text-gray-600 font-medium flex items-center gap-2">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            Voltar
+        </a>
+        <h1 class="text-3xl font-bold text-black-800">Nova Conexão</h1>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto">
+        <div class="bg-white p-8 rounded-lg shadow-lg border border-blue-600 flex flex-col items-center">
+            <div class="text-blue-600 mb-6">
+                <i data-lucide="building-2" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Conta Bancária</h3>
+            <p class="text-gray-600 text-center mb-6">Conecte sua conta bancária para sincronização automática de
+                transações</p>
+
+            <a href="{% url 'financas:conectar_conta' %}"
+                class="w-full text-center py-3 px-6 rounded-lg bg-[#282e3f] text-white font-semibold hover:bg-[#404965] transition-colors">
+                Conectar Banco
+            </a>
+        </div>
+
+        <div class="bg-white p-8 rounded-lg shadow-lg border border-gray-200 flex flex-col items-center">
+            <div class="text-purple-600 mb-6">
+                <i data-lucide="credit-card" class="w-10 h-10"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Cartão de Crédito</h3>
+            <p class="text-gray-600 text-center mb-6">Conecte seu cartão de crédito para acompanhar gastos
+                automaticamente</p>
+
+            <a href="{% url 'financas:conectar_conta' %}"
+                class="w-full text-center py-3 px-6 rounded-lg bg-white text-black-800 font-semibold border border-gray-200 hover:bg-gray-300 transition-colors">
+                Conectar Cartão
+            </a>
+        </div>
+    </div>
+
+    <div class="mx-auto mt-12 p-4 rounded-lg border border-blue-200 bg-blue-50 text-blue-800 flex items-center gap-4">
+        <i data-lucide="shield" class="w-5 h-5"></i>
+        <div>
+            <p class="font-semibold text-blue-900">Seus dados estão seguros</p>
+            <p class="text-sm">Utilizamos criptografia de ponta e nunca armazenamos suas credenciais bancárias. Somos
+                certificados pelo Banco Central e seguimos todas as normas de segurança.</p>
+        </div>
+    </div>
+
+
+    <script>
+        // Ativa os ícones do Lucide
+        lucide.createIcons();
+    </script>
+
+    {% endblock %}

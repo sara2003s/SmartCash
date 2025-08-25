@@ -327,8 +327,8 @@
     </div>
     <!-- MODAL CADASTRO-->
     <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
-
+        
+        <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md relative" onclick="event.stopPropagation();">
             <!-- Botão fechar -->
             <button onclick="fecharRegister()"
                 class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
@@ -408,6 +408,35 @@
 
 
     <script>
+        function mostrarTab(tab) {
+            const formEmail = document.getElementById('form-email');
+            const formUsuario = document.getElementById('form-usuario');
+            const tabEmailBtn = document.getElementById('tab-email');
+            const tabUsuarioBtn = document.getElementById('tab-usuario');
+
+            if (tab === 'email') {
+                formEmail.classList.remove('hidden');
+                formUsuario.classList.add('hidden');
+                tabEmailBtn.classList.add('bg-gray-900', 'text-white');
+                tabEmailBtn.classList.remove('border', 'border-gray-300', 'text-gray-800');
+                tabUsuarioBtn.classList.remove('bg-gray-900', 'text-white');
+                tabUsuarioBtn.classList.add('border', 'border-gray-300', 'text-gray-800');
+            } else {
+                formUsuario.classList.remove('hidden');
+                formEmail.classList.add('hidden');
+                tabUsuarioBtn.classList.add('bg-gray-900', 'text-white');
+                tabUsuarioBtn.classList.remove('border', 'border-gray-300', 'text-gray-800');
+                tabEmailBtn.classList.remove('bg-gray-900', 'text-white');
+                tabEmailBtn.classList.add('border', 'border-gray-300', 'text-gray-800');
+            }
+        }
+        function fecharFora(event) {
+            if (event.target.id === "loginModal" || event.target.id === "registerModal") {
+                document.getElementById("loginModal").classList.add("hidden");
+                document.getElementById("registerModal").classList.add("hidden");
+            }
+        }
+
         function abrirModal() {
             document.getElementById("loginModal").classList.remove("hidden");
         }
@@ -436,6 +465,7 @@
             {% endif %}
 
         });
+
 
     </script>
 
