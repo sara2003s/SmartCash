@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.humanize',
-    'financas', 
+    'django.contrib.humanize', 
+    'financas.apps.FinancasConfig',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +57,9 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'financas', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'financas', 'templates'),
+                 BASE_DIR / 'setup' / 'templates',
+                 ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

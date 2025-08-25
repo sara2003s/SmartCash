@@ -1,19 +1,556 @@
-{% block title %}Configuração Inicial{% endblock %}
+{% extends "financas_base.html" %}
+{% load static %}
 
 {% block content %}
-<div class="bg-gray-100 flex items-center justify-center min-h-screen p-6">
-    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg text-center">
-        <h1 class="text-3xl font-bold text-gray-800 mb-4">Bem-vindo(a) ao SmartCash!</h1>
-        <p class="text-gray-600 mb-6">Estamos quase prontos. Por favor, complete as informações iniciais para começar.
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow p-6 mt-3">
+
+    <!-- PASSO 1 -->
+    <div id="passo1" class="block">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <span>⚡</span> Configuração Inicial
+            </h1>
+            <span class="text-sm text-gray-500">Passo 1 de 5</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full h-2 bg-gray-200 rounded-full mt-5">
+            <div class="h-2 bg-black rounded-full" style="width: 20%;"></div>
+        </div>
+
+        <!-- Title -->
+        <div class="text-center space-y-2 mt-8">
+            <h2 class="text-2xl font-bold">Como deseja começar?</h2>
+            <p class="text-gray-500">Escolha a melhor forma de configurar seu SmartCash</p>
+        </div>
+
+        <!-- Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+            <!-- Card 1 -->
+            <div class="border border-indigo-200 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="flex justify-center mb-4">
+                    <div
+                        class="w-14 h-14 flex items-center justify-center rounded-full bg-indigo-50 text-indigo-600 text-2xl">
+                        <img src="{% static 'img/zap.png' %}" alt="Banco" class="w-7 h-7">
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-center">Conectar Conta Bancária Agora</h3>
+                <p class="text-center text-gray-500 mb-4">Ative a sincronização automática e insights em tempo real</p>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-center gap-2 text-green-600">● Sincronização automática de transações</li>
+                    <li class="flex items-center gap-2 text-green-600">● Análises em tempo real</li>
+                    <li class="flex items-center gap-2 text-green-600">● Alertas personalizados</li>
+                    <li class="flex items-center gap-2 text-green-600">● Categorização automática</li>
+                </ul>
+                <div class="mt-6">
+                    <button onclick="mostrarPasso(2)"
+                        class="block w-full text-center py-2 rounded-lg bg-[#1d4ed8] text-white font-semibold">
+                        Conectar Agora
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="flex justify-center mb-4">
+                    <div
+                        class="w-14 h-14 flex items-center justify-center rounded-full bg-gray-50 text-gray-500 text-2xl">
+                        <img src="{% static 'img/clock.png' %}" alt="Time" class="w-7 h-7">
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-center">Pular por Enquanto</h3>
+                <p class="text-center text-gray-500 mb-4">Configure depois, com acesso limitado até configurar a conta
+                </p>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-center gap-2 text-gray-400">● Acesso ao dashboard básico</li>
+                    <li class="flex items-center gap-2 text-gray-400">● Criação manual de metas</li>
+                    <li class="flex items-center gap-2 text-gray-400">● Inserção manual de transações</li>
+                    <li class="flex items-center gap-2 text-orange-500">● Funcionalidades limitadas</li>
+                </ul>
+                <div class="mt-6">
+                    <button onclick="mostrarPasso(5)"
+                        class="block w-full text-center py-2 rounded-lg border border-gray-300 bg-white text-gray-700 font-semibold hover:bg-gray-50">
+                        Configurar Depois
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security -->
+        <div class="border border-blue-100 bg-blue-50 rounded-lg p-4 flex items-start gap-4 text-sm mt-6">
+            <div class="text-blue-600 text-xl">
+                <img src="{% static 'img/shield.png' %}" alt="Banco" class="w-8 h-6">
+            </div>
+            <div>
+                <p class="font-semibold text-blue-800">Seus dados estão seguros</p>
+                <p class="text-blue-700">
+                    Utilizamos criptografia de ponta e nunca armazenamos suas credenciais bancárias.
+                    Somos certificados pelo Banco Central e seguimos todas as normas de segurança.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASSO 2 -->
+    <div id="passo2" class="hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <img src="{% static 'img/piggy-bank (1).png' %}" alt="Banco" class="w-7 h-7">
+                Configuração Inicial
+            </h1>
+            <span class="text-sm text-gray-500">Passo 2 de 5</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full h-2 bg-gray-200 rounded-full mt-6">
+            <div class="h-2 bg-black rounded-full" style="width: 50%;"></div>
+        </div>
+
+        <!-- Title -->
+        <div class="text-center space-y-4 mt-8">
+            <h2 class="text-2xl font-bold">Escolha como conectar</h2>
+            <p class="text-gray-500">Selecione a forma que preferir para importar seus dados financeiros</p>
+        </div>
+
+        <!-- Options -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <!-- Card 1 -->
+            <div class="border border-green-200 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="flex justify-center mb-4">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-green-50 text-green-600">
+                        <img src="{% static 'img/building-2.png' %}" alt="Banco" class="w-7 h-7">
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-center">Conectar Conta Bancária</h3>
+                <p class="text-center text-gray-500 mb-4">Integração direta com seu banco</p>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2 text-green-600">● Sincronização automática</li>
+                    <li class="flex items-center gap-2 text-green-600">● Atualizações em tempo real</li>
+                    <li class="flex items-center gap-2 text-green-600">● Categorização inteligente</li>
+                    <li class="flex items-center gap-2 text-green-600">● Histórico completo</li>
+                </ul>
+                <div class="mt-6">
+                    <button onclick="mostrarPasso(3)"
+                        class="block w-full text-center py-2 rounded-lg bg-green-600 text-white font-medium">
+                        Conectar Banco
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition">
+                <div class="flex justify-center mb-4">
+                    <div class="w-14 h-14 flex items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                        <img src="{% static 'img/upload.png' %}" alt="Upload" class="w-7 h-7">
+                    </div>
+                </div>
+                <h3 class="text-lg font-semibold text-center">Importar Extrato Manual</h3>
+                <p class="text-center text-gray-500 mb-4">CSV ou PDF até 10MB</p>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center gap-2 text-blue-600">● Upload de arquivos CSV/PDF</li>
+                    <li class="flex items-center gap-2 text-blue-600">● Processamento inteligente</li>
+                    <li class="flex items-center gap-2 text-blue-600">● Máxima privacidade</li>
+                    <li class="flex items-center gap-2 text-orange-500">● Atualização manual</li>
+                </ul>
+                <div class="mt-6">
+                    <button onclick="abrirModal()"
+                        class="w-full border border-blue-500 text-blue-600 font-medium py-2 rounded-lg shadow hover:bg-blue-50 transition">
+                        Importar Extrato
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert -->
+        <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-4 text-sm mt-6 flex items-start gap-4">
+            <div class="text-yellow-600 text-xl">
+                <img src="{% static 'img/shield (1).png' %}" alt="Alert" class="w-9 h-6">
+            </div>
+            <div>
+                <p class="font-semibold text-yellow-800">Importante sobre importação manual</p>
+                <p class="text-yellow-700">
+                    Se escolher importar extrato, o sistema orienta sobre formatos aceitos (CSV, PDF) e limita o tamanho
+                    do arquivo a 10MB.
+                    Você precisará fazer upload periodicamente para manter os dados atualizados.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer Buttons -->
+        <div class="mt-6 flex justify-between">
+            <button onclick="mostrarPasso(1)"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-black-600 hover:bg-gray-100">
+                Voltar
+            </button>
+            <div class="flex gap-4">
+                <button onclick="abrirModal()" class="px-4 py-2 rounded-lg text-black-600 hover:bg-gray-100">
+                    Importar Extrato
+                </button>
+                <button onclick="mostrarPasso(3)" class="px-4 py-2 bg-[#272e3f] text-white rounded-lg font-medium">
+                    Conectar Banco
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Passo 3 -->
+    <div id="passo3" class="hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <img src="{% static 'img/piggy-bank (1).png' %}" alt="Banco" class="w-7 h-7">
+                Configuração Inicial
+            </h1>
+            <span class="text-sm text-gray-500">Passo 3 de 5</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full h-2 bg-gray-200 rounded-full mt-6">
+            <div class="h-2 bg-black rounded-full" style="width: 60%;"></div>
+        </div>
+
+        <h2 class="text-2xl text-center space-y-4 font-bold mt-6 mb-3">Conectar Conta Bancária</h2>
+        <p class="text-gray-600 text-center">
+            Escolha seu banco e conecte sua conta para sincronização automática
         </p>
 
-        <form action="" method="post">
-            {% csrf_token %}
-            <button type="submit"
-                class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-                Próximo
+        <!-- Bancos Populares -->
+        <h3 class="text-lg font-semibold mb-3">Bancos Populares</h3>
+        <div class="grid grid-cols-2 gap-4 mb-6 ">
+            <button id="bancoBrasilBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">🏦</span>
+                <span class="font-medium">Banco do Brasil</span>
             </button>
-        </form>
+
+            <!-- Itaú -->
+            <button id="itauBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">🏦</span>
+                <span class="font-medium">Itaú</span>
+            </button>
+
+            <!-- Nubank -->
+            <button id="nubankBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">💜</span>
+                <span class="font-medium">Nubank</span>
+            </button>
+
+            <!-- Bradesco -->
+            <button id="bradescoBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">🏦</span>
+                <span class="font-medium">Bradesco</span>
+            </button>
+        </div>
+
+        <!-- Outros Bancos -->
+        <h3 class="text-lg font-semibold mb-3">Outros Bancos</h3>
+        <div class="grid grid-cols-2 gap-4">
+            <!-- Santander -->
+            <button id="santanderBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">🏢</span>
+                <span class="font-medium">Santander</span>
+            </button>
+            <!-- Caixa -->
+            <button id="caixaBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">🏦</span>
+                <span class="font-medium">Caixa Econômica</span>
+            </button>
+            <!-- Inter -->
+            <button id="interBtn" onclick="mostrarPasso(4)"
+                class="h-24 flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">🧡</span>
+                <span class="font-medium">Banco Inter</span>
+            </button>
+            <!-- C6 Bank -->
+            <button id="c6Btn" onclick="mostrarPasso(4)"
+                class="h-24 flex-col items-center justify-center p-6 border rounded-lg hover:bg-gray-50 transition">
+                <span class="text-3xl mb-2">⚡</span>
+                <span class="font-medium">C6 Bank</span>
+            </button>
+        </div>
+
+        <!-- Botão Voltar -->
+        <div class="mt-4">
+            <button onclick="mostrarPasso(2)" class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+                Voltar
+            </button>
+        </div>
     </div>
-</div>
-{% endblock %}
+
+    <!-- PASSO 4 -->
+    <div id="passo4" class="hidden">
+        <!-- Header -->
+        <div class="flex items-center justify-between">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <img src="{% static 'img/piggy-bank (1).png' %}" alt="Banco" class="w-7 h-7">
+                Configuração Inicial
+            </h1>
+            <span class="text-sm text-gray-500">Passo 4 de 5</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="w-full h-2 bg-gray-200 rounded-full mt-6">
+            <div class="h-2 bg-black rounded-full" style="width: 80%;"></div>
+        </div>
+
+        <!-- Form -->
+        <h2 class="text-2xl font-bold text-center mt-6 mb-2">Conectar Conta Bancária</h2>
+        <p class="text-gray-600 text-center mb-6">
+            Informe seus dados de acesso de forma segura
+        </p>
+
+        <!-- Card do banco selecionado -->
+        <div class="border border-green-200 bg-green-50 rounded-lg p-4 mt-6 text-sm flex items-center gap-3">
+            <!-- Ícone do banco -->
+            <span id="iconeBanco" class="text-3xl">🏦</span>
+
+            <!-- Nome + badge -->
+            <div>
+                <h1 id="nomeBanco" class="text-xl font-medium">Banco do Brasil</h1>
+                <span
+                    class="inline-flex items-center gap-1 mt-1 px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full">
+                    <img src="{% static 'img/shield (3).png' %}" alt="Segurança" class="w-4 h-4">
+                    Conexão Segura
+                </span>
+            </div>
+        </div>
+
+        <div class="space-y-4 mt-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Usuário/CPF</label>
+                <input id="usuarioInput" type="text" placeholder="Seu usuário ou CPF"
+                    class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Senha</label>
+                <input id="senhaInput" type="password" placeholder="Sua senha"
+                    class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Número da Conta (Opcional)</label>
+                <input id="contaInput" type="text" placeholder="Ex: 12345-6"
+                    class="mt-1 w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+        </div>
+
+        <!-- Segurança -->
+        <div class="border border-blue-200 bg-blue-50 rounded-lg p-4 mt-6 text-sm">
+            <p class="font-semibold text-blue-800">🔒 Segurança garantida</p>
+            <ul class="mt-2 text-blue-700 space-y-1">
+                <li>✔ Criptografia de ponta</li>
+                <li>✔ Não armazenamos suas credenciais</li>
+                <li>✔ Conformidade com LGPD</li>
+            </ul>
+        </div>
+        <div class="mt-6 flex justify-between">
+            <button onclick="mostrarPasso(2)"
+                class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+                Voltar
+            </button>
+
+            <div class="flex gap-3">
+                <button onclick="mostrarPasso(3)"
+                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100">
+                    Trocar Banco
+                </button>
+                <button type="button" onclick="validarFormulario()"
+                    class="px-4 py-2 rounded-lg bg-[#272e3f] text-white hover:bg-[#272e3f]">
+                    Conectar Banco
+                </button>
+            </div>
+        </div>
+        <!-- Alerta de erro -->
+        <div id="alertaErro"
+            class="hidden fixed bottom-4 right-4 p-4 rounded-lg bg-red-500 text-white shadow-lg w-80 transform transition-all duration-300 translate-x-full opacity-0 z-50">
+            <h3 class="font-semibold">Campos obrigatórios</h3>
+            <p>Preencha Usuário/CPF e Senha para continuar</p>
+        </div>
+    </div>
+
+        <!-- PASSO 5 - Conclusão -->
+        <div id="passo5" class="hidden fixed inset-0 flex items-center justify-center bg-gray-50">
+            <div class="max-w-4xl w-full bg-white rounded-xl shadow p-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between">
+                    <h1 class="text-xl font-bold flex items-center gap-2">
+                        <img src="{% static 'img/piggy-bank (1).png' %}" alt="Banco" class="w-7 h-7">
+                        Configuração Inicial
+                    </h1>
+                    <span class="text-sm text-gray-500">Configuração Concluída</span>
+                </div>
+
+                <!-- Progress bar -->
+                <div class="w-full h-2 bg-gray-200 rounded-full mt-6">
+                    <div class="h-2 bg-[#0f172a] rounded-full" style="width: 100%;"></div>
+                </div>
+
+                <!-- Title -->
+                <div class="text-center space-y-4 mt-8">
+                    <h2 class="text-2xl font-bold">Configuração Concluída!</h2>
+                    <p class="text-gray-500">
+                        Seu SmartCash está pronto. Você pode conectar seu banco ou importar extratos
+                        a qualquer momento em <span class="font-medium text-gray-700">Configurações</span>.
+                    </p>
+                </div>
+
+                <!-- Botão final -->
+                <div class="mt-8">
+                    <button onclick="window.location.href='/dashboard'"
+                        class="block w-full text-center py-3 rounded-lg bg-[#0f172a] text-white font-medium">
+                        Ir para o Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Importar Extrato -->
+        <div id="modalExtrato"
+            class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+
+                <!-- Botão Fechar -->
+                <button onclick="fecharModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+                    <img src="/static/img/x.png" alt="Upload" class="w-6 h-6">
+                </button>
+
+                <!-- Conteúdo do Modal -->
+                <h2 class="text-xl font-medium flex items-center gap-2 mb-2">
+                    <img src="/static/img/upload (1).png" alt="Upload" class="w-6 h-6">
+                    Upload de Extrato Bancário
+                </h2>
+                <p class="text-gray-600 text-sm mb-4">
+                    Envie seu extrato em formato CSV, OFX ou XLSX para análise automática
+                </p>
+
+                <!-- Caixa de Upload -->
+                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <div class="flex justify-center items-center h-20">
+                        <img src="/static/img/upload (1).png" alt="Upload" class="w-12 h-12">
+                    </div>
+                    <p class="font-semibold text-[#4f5866] mb-2">Arraste seu arquivo aqui</p>
+                    <p class="text-[#4f5866] text-sm mb-6">ou clique para selecionar</p>
+
+                    <label
+                        class="cursor-pointer bg-white border border-gray-200 text-black px-4 py-2 rounded-lg hover:bg-[#eff6ff]">
+                        Selecionar Arquivo
+                        <input type="file" class="hidden" accept=".csv,.ofx,.xlsx" />
+                    </label>
+
+                    <p class="text-xs text-gray-400 mt-6">Formatos aceitos: CSV, XLSX, OFX (máx. 10MB)</p>
+                </div>
+
+                <!-- Instruções -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6 text-sm">
+                    <p class="font-semibold text-[#1e3a8a]"> Como obter seu extrato:</p>
+                    <ul class="list-disc list-inside text-[#1e3a8a] mt-2">
+                        <li>Acesse o app ou site do seu banco</li>
+                        <li>Vá em "Extratos" ou "Movimentação"</li>
+                        <li>Selecione o período desejado</li>
+                        <li>Exporte em formato CSV, OFX ou XLSX</li>
+                    </ul>
+                </div>
+                <!-- Segurança -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-sm">
+                    <div class="flex items-center gap-1 font-semibold text-gray-700">
+                        <img src="{% static 'img/info.png' %}" alt="informações" class="w-4 h-4">
+                        Segurança dos seus dados
+                    </div>
+                    <p class="text-gray-500 mt-1">
+                        Seus extratos são processados localmente e criptografados.
+                        Não armazenamos informações sensíveis como números de conta.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+
+            function mostrarPasso(passo) {
+                document.querySelectorAll('[id^="passo"]').forEach(div => div.classList.add('hidden'));
+                document.getElementById("passo" + passo).classList.remove("hidden");
+            }
+
+            function abrirModal() {
+                document.getElementById('modalExtrato').classList.remove('hidden');
+            }
+            function fecharModal() {
+                document.getElementById('modalExtrato').classList.add('hidden');
+            }
+
+            function selecionarBanco(icone, nome) {
+                document.getElementById("iconeBanco").textContent = icone;
+                document.getElementById("nomeBanco").textContent = nome;
+            }
+            function validarFormulario() {
+                const usuario = document.getElementById("usuarioInput").value.trim();
+                const senha = document.getElementById("senhaInput").value.trim();
+
+                if (usuario === "" || senha === "") {
+                    mostrarErro(); // 👈 chama alerta bonito
+                    return;
+                }
+
+                // Se tudo ok, vai para passo 5
+                mostrarPasso(5);
+            }
+
+            function mostrarErro() {
+                const alerta = document.getElementById("alertaErro");
+                alerta.classList.remove("hidden");
+
+                setTimeout(() => {
+                    alerta.classList.remove("translate-x-full", "opacity-0");
+                }, 10);
+
+                // Fecha sozinho depois de 4 segundos
+                setTimeout(() => {
+                    alerta.classList.add("translate-x-full", "opacity-0");
+                    setTimeout(() => alerta.classList.add("hidden"), 300);
+                }, 4000);
+            }
+
+            // Exemplo: quando clicar em um banco da lista
+            document.getElementById("bancoBrasilBtn").addEventListener("click", function () {
+                selecionarBanco("🏦", "Banco do Brasil");
+            });
+
+            document.getElementById("itauBtn").addEventListener("click", function () {
+                selecionarBanco("🏦", "Itaú");
+            });
+
+            document.getElementById("bradescoBtn").addEventListener("click", function () {
+                selecionarBanco("🏛️", "Bradesco");
+            });
+            document.getElementById("santanderBtn").addEventListener("click", function () {
+                selecionarBanco("🏢", "Santander");
+            });
+
+            document.getElementById("nubankBtn").addEventListener("click", function () {
+                selecionarBanco("💜", "Nubank");
+            });
+
+            document.getElementById("caixaBtn").addEventListener("click", function () {
+                selecionarBanco("🏦", "Caixa Econômica");
+            });
+
+            document.getElementById("interBtn").addEventListener("click", function () {
+                selecionarBanco("🧡", "Banco Inter");
+            });
+
+            document.getElementById("c6Btn").addEventListener("click", function () {
+                selecionarBanco("⚡", "C6 Bank");
+            });
+
+
+        </script>
+        {% endblock %}

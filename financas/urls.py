@@ -14,7 +14,7 @@ urlpatterns = [
     path("transacoes/", views.transacoes, name="transacoes"),
     path("metas/", views.metas, name="metas"),
     path("conexoes_bancarias/", views.conexoes_bancarias, name="conexoes_bancarias"),
-    path("educacao/", views.educacao, name="educacao"),
+    path("educacao_2/", views.educacao_2, name="educacao_2"),
     path("configuracoes/", views.configuracoes, name="configuracoes"),
     path('configuracao-inicial/', views.configuracao_inicial, name='configuracao_inicial'),    
 

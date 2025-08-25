@@ -1,8 +1,141 @@
 {% extends "financas/base.html" %}
-
+{% load static %}
+{% block vars %}{% with sem_header=True %}{% endwith %}{% endblock %}
 {% block title %}Transações{% endblock %}
-
 {% block content %}
-<h1 class="text-2xl font-bold mb-4">Transações</h1>
-<p>Aqui futuramente vai a lista de transações 💰</p>
+<div class="p-1">
+  <!-- Título -->
+  <h1 class="text-2xl font-bold">Transações</h1>
+  <p class="text-gray-500 mb-6">Acompanhe todas as suas movimentações financeiras</p>
+
+<!-- Cards resumo -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+            <p class="text-sm text-gray-600">Receitas</p>
+            <p class="text-2xl font-bold text-green-600">R$ {{ total_receitas|default:"0,00" }}</p>
+        </div>
+        <img src="{% static 'img/trending-up (1).png' %}" alt="trending-up" class="w-8 h-8">
+    </div>
+    
+    <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+            <p class="text-sm text-gray-600">Despesas</p>
+            <p class="text-2xl font-bold text-red-600">R$ {{ total_despesas|default:"0,00" }}</p>
+        </div>
+        <img src="{% static 'img/trending-down.png' %}" alt="trending-up" class="w-8 h-8">
+    </div>
+    
+    <div class="bg-white p-4 rounded-lg shadow flex items-center justify-between">
+        <div>
+            <p class="text-sm text-gray-600">Saldo</p>
+            <p class="text-2xl font-bold text-green-600">R$ {{ saldo|default:"0,00" }}</p>
+        </div>
+        <img src="{% static 'img/dollar-sign (1).png' %}" alt="trending-up" class="w-8 h-8">
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="bg-white p-4 rounded-lg shadow mb-8">
+    <h2 class="font-bold text-lg mb-4">Filtros</h2>
+    <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Período -->
+      <div>
+        <label class="block text-sm text-gray-600">Período</label>
+        <select name="periodo" class="border p-2 rounded w-full">
+        <option>Todos os períodos</option>
+        <option>Agosto 2025</option>
+        <option>Julho 2025</option>
+        <option>Junho 2025</option>
+        <option>Maio 2025</option>
+        <option>Abril 2025</option>
+        <option>Março 2025</option>
+        <option>Fevereiro 2025</option>
+        <option>Janeiro 2025</option>
+      </select>
+      </div>
+
+      <!-- Buscar -->
+      <div>
+        <label class="block text-sm text-gray-600">Buscar</label>
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar transações..." class="w-full border rounded px-2 py-1">
+      </div>
+
+      <!-- Categoria -->
+      <div>
+        <label class="block text-sm text-gray-600">Categoria</label>
+        <select name="categoria" class="w-full border rounded px-2 py-1">
+          <option value="">Todas</option>
+          {% for cat in categorias %}
+            <option value="{{ cat.id }}" {% if request.GET.categoria == cat.id|stringformat:"s" %}selected{% endif %}>
+              {{ cat.nome }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Tipo -->
+      <div>
+        <label class="block text-sm text-gray-600">Tipo</label>
+        <select name="tipo" class="w-full border rounded px-2 py-1">
+          <option value="">Todos</option>
+          <option value="receita" {% if request.GET.tipo == "receita" %}selected{% endif %}>Receita</option>
+          <option value="despesa" {% if request.GET.tipo == "despesa" %}selected{% endif %}>Despesa</option>
+        </select>
+      </div>
+
+      <!-- Botão aplicar filtros -->
+      <div class="col-span-1 md:col-span-4 flex justify-end">
+        <button type="submit" class="px-4 py-2 bg-[#262d3f] text-white rounded-lg">
+          Aplicar filtros
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Histórico -->
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="font-bold text-lg mb-1">Histórico de Transações</h2>
+    <p class="text-gray-500 text-sm mb-2">{{ transacoes|length }} transação(ões) encontrada(s)</p>
+
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="border-b text-[#64748b]">
+          <th class="text-left font-medium py-2 px-3">Data</th>
+          <th class="text-left font-medium py-2 px-3">Descrição</th>
+          <th class="text-left font-medium py-2 px-3">Categoria</th>
+          <th class="text-left font-medium py-2 px-3">Tipo</th>
+          <th class="text-left font-medium py-2 px-3">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transacoes %}
+          <tr class="border-b">
+            <td class="py-2 px-3">{{ t.data|date:"d/m/Y" }}</td>
+            <td class="py-2 px-3">{{ t.descricao }}</td>
+            <td class="py-2 px-3">{{ t.categoria.nome }}</td>
+            <td class="py-2 px-3">
+              {% if t.tipo == 'receita' %}
+                <span class="text-green-600 font-semibold">Receita</span>
+              {% else %}
+                <span class="text-red-600 font-semibold">Despesa</span>
+              {% endif %}
+            </td>
+            <td class="py-2 px-3 font-bold {% if t.tipo == 'receita' %}text-green-600{% else %}text-red-600{% endif %}">
+              {% if t.tipo == 'receita' %}+{% else %}-{% endif %}
+              R$ {{ t.valor|floatformat:2 }}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-gray-500 py-4">
+              Nenhuma transação encontrada
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

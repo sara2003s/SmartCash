@@ -7,46 +7,69 @@
 {% block content %}
 <div class="container mx-auto">
 
-    <h1 class="text-3xl font-bold mb-2">Olá, {{ user.first_name|default:"Sara" }}! 👋</h1>
+    <h1 class="text-3xl font-bold mb-2">Olá, {{ user.first_name|default:user.username }}! 👋</h1>
     <p class="text-gray-500 mb-6">Aqui está um resumo da sua situação financeira atual.</p>
 
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-white shadow rounded p-4">
             <h2 class="text-gray-600">Saldo Atual</h2>
-            <p class="text-2xl font-bold text-green-600">R$ {{ saldo }}</p>
-            <p class="text-sm text-gray-500">↗ Você tem R$ 15k guardados e economiza R$ 1k/mês</p>
+            <p class="text-2xl font-bold text-green-600">R$ 0,00 {{ saldo|floatformat:2 }}</p>
+            <p class="text-sm text-gray-500">
+                {% if saldo > 0 %}
+                ↗ Você já tem R$ {{ saldo|floatformat:2 }} guardados 🚀
+                {% else %}
+                Seu saldo está zerado. Adicione uma receita para começar!
+                {% endif %}
+            </p>
         </div>
-
         <div class="bg-white shadow rounded p-4">
             <h2 class="text-gray-600">Receitas</h2>
-            <p class="text-2xl font-bold text-blue-600">R$ {{ entradas }}</p>
-            <p class="text-sm text-gray-500">Recebe R$ 4k por mês entre salário e freelas</p>
+            <p class="text-2xl font-bold text-blue-600">R$ 0,00 {{ entradas|floatformat:2 }}</p>
+            <p class="text-sm text-gray-500">
+                {% if entradas > 0 %}
+                Recebeu um total de R$ {{ entradas|floatformat:2 }} em receitas.
+                {% else %}
+                Nenhuma receita registrada ainda.
+                {% endif %}
+            </p>
         </div>
-
+        
         <div class="bg-white shadow rounded p-4">
             <h2 class="text-gray-600">Gastos</h2>
-            <p class="text-2xl font-bold text-red-600">R$ {{ saidas }}</p>
-            <p class="text-sm text-gray-500">↘ Gasta R$ 3k em moradia, alimentação e transporte</p>
+            <p class="text-2xl font-bold text-red-600">- R$ 0,00 {{ saidas|floatformat:2 }}</p>
+            <p class="text-sm text-gray-500">
+                {% if saidas > 0 %}
+                Gastou R$ {{ saidas|floatformat:2 }} em suas despesas.
+                {% else %}
+                Nenhuma despesa registrada ainda.
+                {% endif %}
+            </p>
         </div>
 
         <div class="bg-white shadow rounded p-4">
             <h2 class="text-gray-600">Meta de Economia</h2>
-            <p class="text-2xl font-bold text-purple-600">R$ {{ meta }}</p>
+            <p class="text-2xl font-bold text-black-600">R$ {{ meta }}</p>
             <div class="w-full bg-gray-200 rounded h-3 mt-2">
-                <div class="h-3 rounded bg-purple-500" style="width: 60%;"></div>
             </div>
-            <p class="text-sm text-gray-500 mt-1">60% da meta de R$ {{ meta_total }}</p>
+            {% if meta > 0 %}
+            Progresso: R$ {{ meta|floatformat:2 }} / R$ {{ meta_total|floatformat:2 }}
+            {% else %}
+            <p class="text-sm text-gray-600">
+                Nenhuma meta definida ainda. Crie sua primeira meta
+            </p>
+            {% endif %}
         </div>
-    </div>
+        </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div class="bg-white shadow rounded p-6">
-            <h2 class="text-xl font-bold mb-4">Evolução Financeira</h2>
+            <h2 class="text-xl font-semibold mb-1">Evolução Financeira</h2>
+            <p class="text-gray-500 mb-4">Receitas, gastos e economia nos últimos 6 meses</p>
             <canvas id="financeChart" class="h-64"></canvas>
         </div>
 
         <div class="col-span-1 bg-white p-6 rounded-lg shadow flex flex-col justify-between h-full">
-            <h2 class="text-xl font-bold mb-4">Recomendações Inteligentes</h2>
+            <h2 class="text-xl font-semibold mb-4">Recomendações Inteligentes</h2>
             <ul class="space-y-3 flex-1">
                 <li class="p-3 bg-white-50 border border-red-200 rounded">
                     ⚠️ <strong>Atenção:</strong>
@@ -80,7 +103,7 @@
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold mb-4">Distribuição de Gastos</h2>
+            <h2 class="text-xl font-semibold mb-1">Distribuição de Gastos</h2>
             <p class="text-gray-500 mb-4">Veja como seus gastos estão distribuídos por categoria</p>
             <div class="flex flex-col items-center">
                 <canvas id="expensesPieChart" class="h-64 w-64 mx-auto"></canvas>
@@ -88,15 +111,40 @@
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-lg font-semibold mb-2">Transações Recentes</h2>
-            <p class="text-sm text-gray-500 mb-4">Suas últimas movimentações financeiras</p>
-            <div class="text-sm">
-            </div>
+            <h2 class="text-xl font-semibold mb-1">Transações Recentes</h2>
+            <p class="text-gray-500 text-sm mb-4">Suas últimas movimentações financeiras</p>
+        
+            <ul class="divide-y">
+                {% for transacao in transacoes_recentes %}
+                <li class="flex justify-between py-3">
+                    <!-- Lado esquerdo -->
+                    <div>
+                        <p class="font-semibold">{{ transacao.descricao }}</p>
+                        <p class="text-black-500 text-sm">
+                            {{ transacao.categoria.nome }} • {{ transacao.data|date:"d/m/Y" }}
+                        </p>
+                    </div>
+        
+                    <!-- Lado direito -->
+                    <div>
+                        <span
+                            class="{% if transacao.tipo == 'saida' %}text-red-600{% else %}text-green-600{% endif %} font-bold">
+                            {% if transacao.tipo == 'saida' %}-{% else %}+{% endif %}
+                            R$ {{ transacao.valor|floatformat:2 }}
+                        </span>
+                    </div>
+                </li>
+                {% empty %}
+                <li class="text-gray-500 py-2">Nenhuma transação registrada ainda.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-lg font-semibold mb-2">Gastos por Categoria</h2>
-            <p class="text-sm text-gray-500 mb-4">Distribuição dos seus gastos este mês</p>
+            <p class="text-sm text-gray-500 mb-2">Distribuição dos seus gastos este mês</p>
             <select class="border rounded p-2">
                 <option>Selecione o mês</option>
                 <option>Janeiro 2025</option>
@@ -106,7 +154,7 @@
                 <option>Maio 2025</option>
                 <option>Junho 2025</option>
             </select>
-            <div class="space-y-4">
+            <div class="space-y-4 mt-5">
                 {% for item in gastos_detalhados %}
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
@@ -141,12 +189,12 @@
             datasets: [
                 {
                     label: 'Receitas',
-                    data: [8000, 8500, 8200, 8700, 8800, 9000],
+                    data: receitas.length ? receitas : [],
                     backgroundColor: '#34d399'
                 },
                 {
                     label: 'Gastos',
-                    data: [3000, 3200, 3100, 3400, 3300, 3250],
+                    data: gastos.length ? gastos : [],
                     backgroundColor: '#f87171'
                 }
             ]
@@ -155,6 +203,9 @@
             responsive: true,
             plugins: {
                 legend: { position: 'bottom' }
+            },
+            scales: {
+                y: { beginAtZero: true }
             }
         }
     });

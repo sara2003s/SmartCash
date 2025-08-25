@@ -1,11 +1,13 @@
-from financas.models import Transacao, Meta, Profile
+from financas.models import Transacao, Meta, Profile, Categoria
 from django.db.models import Sum
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .models import Meta
+from datetime import datetime
+from django.db.models.functions import TruncMonth
+from .forms import PerfilForm, SuporteForm
 
 def login_view(request):
     if request.method == 'POST':
@@ -103,60 +105,34 @@ def dashboard(request):
     entradas = Transacao.objects.filter(usuario=request.user, tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or 0
     saidas = Transacao.objects.filter(usuario=request.user, tipo='saida').aggregate(Sum('valor'))['valor__sum'] or 0
     saldo = entradas - saidas
-   
-    try:
-        meta = Meta.objects.filter(usuario=request.user).first()
-        if meta:
-            meta_valor = meta.valor_atual
-            meta_total = meta.valor_alvo
-        else:
-            meta_valor = 1000
-            meta_total = 2000
-    except Exception:
-        meta_valor = 1000
-        meta_total = 2000
+
+    meta = Meta.objects.filter(usuario=request.user).first()
+    meta_valor = meta.valor_atual if meta else 0
+    meta_total = meta.valor_alvo if meta else 0
+
+    gastos_por_categoria = Transacao.objects.filter(
+        usuario=request.user, 
+        tipo='saida'
+    ).values('categoria__nome', 'categoria__cor').annotate(
+        total_gasto=Sum('valor')
+    ).order_by('-total_gasto')
+
+    total_gastos = sum(item['total_gasto'] for item in gastos_por_categoria)
+    
+    gastos_detalhados = []
+    for item in gastos_por_categoria:
+        porcentagem = (item['total_gasto'] / total_gastos) * 100 if total_gastos > 0 else 0
+        gastos_detalhados.append({
+            'nome': item['categoria__nome'],
+            'cor': item['categoria__cor'], 
+            'valor': item['total_gasto'],
+            'porcentagem': porcentagem
+        })
         
-    try:
-        gastos_por_categoria = Transacao.objects.filter(
-            usuario=request.user, 
-            tipo='saida'
-        ).values('categoria__nome', 'categoria__cor').annotate(
-            total_gasto=Sum('valor')
-        ).order_by('-total_gasto')
+    expenses_labels = [item['categoria__nome'] for item in gastos_por_categoria]
+    expenses_data = [item['total_gasto'] for item in gastos_por_categoria]
 
-        total_gastos = sum(item['total_gasto'] for item in gastos_por_categoria)
-        
-        gastos_detalhados = []
-        for item in gastos_por_categoria:
-            porcentagem = (item['total_gasto'] / total_gastos) * 100 if total_gastos > 0 else 0
-            gastos_detalhados.append({
-                'nome': item['categoria__nome'],
-                'cor': item['categoria__cor'], 
-                'valor': item['total_gasto'],
-                'porcentagem': porcentagem
-            })
-            
-        expenses_labels = [item['categoria__nome'] for item in gastos_por_categoria]
-        expenses_data = [item['total_gasto'] for item in gastos_por_categoria]
-
-    except Exception as e:
-        print(f"Erro ao buscar dados de gastos: {e}")
-        expenses_labels = ['Alimentação', 'Transporte', 'Lazer', 'Saúde', 'Outros']
-        expenses_data = [1200.50, 850.00, 650.00, 350.00, 209.00]
-        gastos_detalhados = [
-            {'nome': 'Alimentação', 'cor': '#F87171', 'valor': 1200.50, 'porcentagem': 37},
-            {'nome': 'Transporte', 'cor': '#60A5FA', 'valor': 850.00, 'porcentagem': 26},
-            {'nome': 'Lazer', 'cor': '#FBBE24', 'valor': 650.00, 'porcentagem': 20},
-            {'nome': 'Saúde', 'cor': '#34D399', 'valor': 350.00, 'porcentagem': 11},
-            {'nome': 'Outros', 'cor': '#8B5CF6', 'valor': 209.00, 'porcentagem': 6},
-        ]
-
-    try:
-        transacoes_recentes = Transacao.objects.filter(usuario=request.user).order_by('-data')[:6]
-    except Exception as e:
-        print(f"Erro ao buscar transações recentes: {e}")
-        transacoes_recentes = [
-        ]
+    transacoes_recentes = Transacao.objects.filter(usuario=request.user).order_by('-data')[:6]
 
     context = {
         'saldo': f"{saldo:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), 
@@ -166,14 +142,71 @@ def dashboard(request):
         'meta_total': f"{meta_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
         'expenses_labels': expenses_labels,
         'expenses_data': expenses_data,
-        'gastos_detalhados': gastos_detalhados, # Use a lista de fallback no caso de erro
+        'gastos_detalhados': gastos_detalhados,
         'transacoes_recentes': transacoes_recentes,
     }
     return render(request, "financas/dashboard.html", context)
 
 @login_required
 def transacoes(request):
-    return render(request, "financas/transacoes.html")
+    transacoes = Transacao.objects.filter(usuario=request.user).order_by('-data')
+    categorias = Categoria.objects.all()
+
+    # --- LISTA DE PERÍODOS DINÂMICA ---
+    periodos_qs = (
+        transacoes
+        .annotate(mes=TruncMonth("data"))
+        .values_list("mes", flat=True)
+        .distinct()
+        .order_by("-mes")
+    )
+    periodos = [d.strftime("%B %Y").capitalize() for d in periodos_qs]
+
+    # --- FILTROS ---
+    q = request.GET.get("q")
+    categoria = request.GET.get("categoria")
+    tipo = request.GET.get("tipo")
+    periodo = request.GET.get("periodo")
+
+    if q:
+        transacoes = transacoes.filter(descricao__icontains=q)
+
+    if categoria:
+        transacoes = transacoes.filter(categoria_id=categoria)
+
+    if tipo:
+        transacoes = transacoes.filter(tipo=tipo)
+
+    if periodo and periodo != "Todos os períodos":
+        try:
+            mes_nome, ano = periodo.split(" ")
+            meses = {
+                "janeiro": 1, "fevereiro": 2, "março": 3, "abril": 4,
+                "maio": 5, "junho": 6, "julho": 7, "agosto": 8,
+                "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12
+            }
+            mes = meses.get(mes_nome.lower())
+            ano = int(ano)
+            transacoes = transacoes.filter(data__month=mes, data__year=ano)
+        except:
+            pass
+
+    # --- RESUMO (sempre baseado nos filtros aplicados) ---
+    total_receitas = transacoes.filter(tipo="receita").aggregate(Sum("valor"))["valor__sum"] or 0
+    total_despesas = transacoes.filter(tipo="despesa").aggregate(Sum("valor"))["valor__sum"] or 0
+    saldo = total_receitas - total_despesas
+
+    context = {
+        "transacoes": transacoes,
+        "categorias": categorias,
+        "periodos": periodos,
+        "total_receitas": f"{total_receitas:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+        "total_despesas": f"{total_despesas:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+        "saldo": f"{saldo:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+        "sem_header": True,
+    }
+    return render(request, "financas/transacoes.html", context)
+
 
 @login_required
 def categorias(request):
@@ -184,12 +217,40 @@ def metas_view(request):
     return render(request, "financas/metas.html")
 
 @login_required
-def conexoes_bancarias(request):
-    return render(request, "financas/conexoes_bancarias.html")
+def conexoes_bancarias(request):    
+    return render(request, "financas/conexoes_bancarias.html",{
+        "sem_header": True
+    })
 
 @login_required
+def educacao_2(request):
+    return render(request, "financas/educacao_2.html",{
+        "sem_header": True
+    })
+
 def configuracoes(request):
-    return render(request, "financas/configuracoes.html")
+    if request.method == "POST":
+        if "perfil_form" in request.POST:
+            perfil_form = PerfilForm(request.POST, instance=request.user)
+            if perfil_form.is_valid():
+                perfil_form.save()
+        elif "suporte_form" in request.POST:
+            suporte_form = SuporteForm(request.POST)
+            if suporte_form.is_valid():
+                # Aqui você pode enviar um email ou salvar no banco
+                print("Assunto:", suporte_form.cleaned_data['assunto'])
+                print("Mensagem:", suporte_form.cleaned_data['mensagem'])
+                # redirect para evitar reenvio do form
+                return redirect("configuracoes")
+    else:
+        perfil_form = PerfilForm(instance=request.user)
+        suporte_form = SuporteForm()
+
+    return render(request, "financas/configuracoes.html", {
+        "perfil_form": perfil_form,
+        "suporte_form": suporte_form,
+        "sem_header": True,
+    })
 
 def inicio(request):
     planos = [

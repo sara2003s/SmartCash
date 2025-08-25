@@ -1,0 +1,431 @@
+{% extends "financas/base.html" %}
+{% block vars %}{% with sem_header=True %}{% endwith %}{% endblock %}
+{% block title %}Configurações{% endblock %}
+
+{% block content %}
+{% load static %}
+<!-- Importando Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- Cabeçalho -->
+<div class="mb-6">
+    <h1 class="text-2xl font-bold">Educação Financeira</h1>
+    <p class="text-gray-600">Aprenda a gerenciar suas finanças e construir riqueza</p>
+</div>
+
+<!-- Abas -->
+<div class="p-2 bg-[#f1f5f9] rounded-lg flex justify-between py-2 mb-6 ">
+    <button class="tab-btn font-medium flex-1 text-center py-2 px-4 rounded-md bg-white text-black shadow-sm"
+        data-tab="fundamentos">
+        Fundamentos
+    </button>
+    <button class="tab-btn font-medium flex-1 text-center py-2 px-4 rounded-md text-gray-600 hover:text-black"
+        data-tab="conteudo">
+        Conteúdo Pro
+    </button>
+    <button class="tab-btn font-medium flex-1 text-center py-2 px-4 rounded-md text-gray-600 hover:text-black"
+        data-tab="ferramentas">
+        Ferramentas
+    </button>
+</div>
+
+<!-- Fundamentos -->
+<div id="fundamentos" class="tab-content">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Card 1: Como Controlar os Gastos -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 mb-4">
+                <i data-lucide="piggy-bank" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-semibold mb-0">Como Controlar os Gastos</h2>
+            <p class="text-gray-600 mb-4">Aprenda técnicas práticas para não gastar mais do que ganha</p>
+
+            <!-- Conteúdo resumido -->
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>🎯 Regra 50-30-20: 50% necessidades, 30% desejos, 20% poupança</li>
+                <li>📱 Use apps para acompanhar gastos diários</li>
+                <li>🛒 Faça lista de compras e evite compras por impulso</li>
+                <li>⏰ Espere 24h antes de compras não essenciais</li>
+                <li>💳 Prefira débito ao crédito quando possível</li>
+            </ul>
+
+            <!-- Conteúdo extra -->
+            <div id="extra1" class="hidden">
+                <ul class="list-disc list-inside text-gray-700 space-y-1 mb-6">
+                    <h2 class="text-600 font-medium mb-2">A Regra 50-30-20 Explicada</h2>
+                    <p class="text-black-500 text-sm  mb-4">Esta regra divide sua renda líquida em três categorias: 50%
+                        para
+                        necessidades (moradia, alimentação, transporte), 30% para desejos (lazer, entretenimento) e 20%
+                        para poupança e investimentos.</p>
+                    <h2 class="text-600 font-medium text-sm  mb-2">Controle de Impulsos</h2>
+                    <p class="text-black-500 mb-4">Técnicas como a regra das 24 horas ajudam a evitar compras
+                        desnecessárias. Quando quiser comprar algo não essencial, anote e espere um dia para decidir.
+                    </p>
+                    <h2 class="text-600 font-medium mb-2">Planejamento de Compras</h2>
+                    <p class="text-black-500 text-sm  mb-4">Sempre faça uma lista antes de ir ao supermercado ou
+                        shopping. Isso
+                        reduz em até 40% os gastos com itens desnecessários.
+                    </p>
+                </ul>
+            </div>
+
+            <!-- Botão -->
+            <button onclick="toggleExtra('extra1', this)"
+                class="w-full py-2 bg-white border border-[#e2e8f0] text-black rounded-md flex items-center justify-center gap-2 hover:bg-[#e2e8f0] transition">
+                Ver Mais ↓
+            </button>
+        </div>
+
+        <!-- Card 2: Criando uma Reserva de Emergência -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-green-100 text-green-600 mb-4">
+                <i data-lucide="target" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-semibold mb-0">Criando uma Reserva de Emergência</h2>
+            <p class="text-gray-600 mb-4">Por que e como construir sua segurança financeira</p>
+
+            <!-- Conteúdo resumido -->
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>🎯 Meta: 6 meses de gastos essenciais guardados</li>
+                <li>🏦 Mantenha em conta poupança ou CDB com liquidez</li>
+                <li>📈 Comece com R$ 50-100 por mês</li>
+                <li>🚨 Use apenas para emergências reais</li>
+                <li>⚡ Reponha sempre que usar</li>
+            </ul>
+
+            <!-- Conteúdo extra -->
+            <div id="extra2" class="hidden">
+                <ul class="list-disc list-inside text-gray-700 space-y-1 mb-6">
+                    <h2 class="text-600 font-medium mb-2">Por que 6 meses?</h2>
+                    <p class="text-black-500 text-sm mb-4">Seis meses é o tempo médio para encontrar um novo emprego ou
+                        resolver
+                        uma emergência financeira. Isso te dá segurança para não se endividar.</p>
+                    <h2 class="text-600 font-medium mb-2">Onde Guardar</h2>
+                    <p class="text-black-500 text-sm  mb-4">Escolha investimentos com liquidez diária como poupança, CDB
+                        de
+                        liquidez diária ou fundos DI. O importante é ter acesso rápido ao dinheiro.</p>
+                    <h2 class="text-600 font-medium mb-2">Como Começar</h2>
+                    <p class="text-black-500 text-sm  mb-4">Se não conseguir guardar muito, comece com qualquer valor.
+                        Mesmo R$
+                        50 por mês já é um início. O hábito é mais importante que o valor inicial.
+                    </p>
+                </ul>
+            </div>
+
+            <!-- Botão -->
+            <button onclick="toggleExtra('extra2', this)"
+                class="w-full py-2 bg-white border border-[#e2e8f0] hover:bg-[#e2e8f0] transition text-black rounded-md flex items-center justify-center gap-2">
+                Ver Mais ↓
+            </button>
+        </div>
+
+        <!-- Card 3: Planejamento Financeiro Básico -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#f3e8ff] text-[#9333ea] mb-4">
+                <i data-lucide="chart-column" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-semibold mb-0">Planejamento Financeiro Básico</h2>
+            <p class="text-gray-600 mb-4">Primeiros passos para organizar sua vida financeira</p>
+
+            <!-- Conteúdo resumido -->
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>📊 Anote todas as receitas e despesas</li>
+                <li>🎯 Defina metas financeiras claras</li>
+                <li>📅 Revise seu orçamento mensalmente</li>
+                <li>💰 Quite dívidas mais caras primeiro</li>
+                <li>📚 Invista em educação financeira</li>
+            </ul>
+
+            <!-- Conteúdo extra -->
+            <div id="extra3" class="hidden">
+                <ul class="list-disc list-inside text-gray-700 space-y-1 mb-6">
+                    <h2 class="text-600 font-medium mb-2">Controle de Gastos</h2>
+                    <p class="text-black-500 text-sm  mb-4">Use planilhas ou apps para anotar todos os gastos por 30
+                        dias. Isso revelará onde seu dinheiro realmente vai e quais gastos podem ser cortados.</p>
+                    <h2 class="text-600 font-medium text-sm  mb-2">Metas SMART</h2>
+                    <p class="text-black-500 mb-4">Defina metas Específicas, Mensuráveis, Atingíveis, Relevantes e
+                        Temporais. Ex: 'Guardar R$ 3.000 em 12 meses para viajar'.
+                    </p>
+                    <h2 class="text-600 font-medium mb-2">Priorização de Dívidas</h2>
+                    <p class="text-black-500 text-sm  mb-4">Quite primeiro as dívidas com juros mais altos (cartão de
+                        crédito, cheque especial). Depois as com juros menores (financiamentos).
+                        reduz em até 40% os gastos com itens desnecessários.
+                    </p>
+                </ul>
+            </div>
+
+            <!-- Botão -->
+            <button onclick="toggleExtra('extra3', this)"
+                class="w-full py-2 bg-white border border-[#e2e8f0] hover:bg-[#e2e8f0] transition text-black rounded-md flex items-center justify-center gap-2">
+                Ver Mais ↓
+            </button>
+        </div>
+
+        <!-- Card 4: Introdução aos Investimentos -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-[#ffedd5] text-[#ea580c] mb-4">
+                <i data-lucide="trending-up" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-semibold mb-0">Introdução aos Investimentos</h2>
+            <p class="text-gray-600 mb-4">Conceitos básicos para começar a investir</p>
+
+            <!-- Conteúdo resumido -->
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>🏦 Comece com Tesouro Direto (renda fixa)</li>
+                <li>📈 Diversifique seus investimentos</li>
+                <li>⏰ Invista pensando no longo prazo</li>
+                <li>📚 Estude antes de investir</li>
+                <li>💸 Nunca invista dinheiro que você precisa</li>
+            </ul>
+            
+            <!-- Conteúdo extra -->
+            <div id="extra4" class="hidden">
+                <ul class="list-disc list-inside text-gray-700 space-y-1 mb-6">
+                    <h2 class="text-600 font-medium mb-2">Tesouro Direto para Iniciantes</h2>
+                    <p class="text-black-500 text-sm  mb-4">É o investimento mais seguro do país, garantido pelo governo. Títulos
+                        como Tesouro Selic são ideais para quem está começando.</p>
+                    <h2 class="text-600 font-medium text-sm  mb-2">Diversificação</h2>
+                    <p class="text-black-500 mb-4">Não coloque todos os ovos na mesma cesta. Diversifique entre renda fixa, ações,
+                        fundos imobiliários para reduzir riscos.</p>
+                    <h2 class="text-600 font-medium mb-2">Paciência nos Investimentos</h2>
+                    <p class="text-black-500 text-sm  mb-4">O tempo é seu maior aliado. Juros compostos funcionam melhor no longo
+                        prazo. Evite resgatar investimentos frequentemente.</p>
+                </ul>
+            </div>
+            
+            <!-- Botão -->
+            <button onclick="toggleExtra('extra4', this)"
+                class="w-full py-2 bg-white border border-[#e2e8f0] hover:bg-[#e2e8f0] transition text-black rounded-md flex items-center justify-center gap-2">
+                Ver Mais ↓
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Conteúdo Pro -->
+<div id="conteudo" class="tab-content hidden">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Bloco 1 -->
+        <div class="bg-white p-6 rounded-lg shadow relative">
+            <span class="absolute top-4 right-4 bg-purple-100 text-purple-600 text-sm px-3 py-1 rounded-full">Pro</span>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 text-purple-600 mb-4">
+                <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Análise Avançada de Mercado</h2>
+            <p class="text-gray-600 mb-4">Entenda indicadores econômicos e como afetam seus investimentos</p>
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>Taxa Selic e seus impactos</li>
+                <li>Inflação e poder de compra</li>
+                <li>Índices de bolsa</li>
+                <li>Análise fundamentalista</li>
+            </ul>
+            <button class="w-full py-2 bg-[#262d3f] text-white rounded-md flex items-center justify-center gap-2">
+                <i data-lucide="play" class="w-5 h-5"></i> Acessar Conteúdo
+            </button>
+        </div>
+
+        <!-- Bloco 2 -->
+        <div class="bg-white p-6 rounded-lg shadow relative">
+            <span class="absolute top-4 right-4 bg-purple-100 text-purple-600 text-sm px-3 py-1 rounded-full">Pro</span>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 text-purple-600 mb-4">
+                <i data-lucide="line-chart" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Estratégias de Investimento</h2>
+            <p class="text-gray-600 mb-4">Técnicas avançadas para maximizar seus rendimentos</p>
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>Diversificação de carteira</li>
+                <li>Rebalanceamento</li>
+                <li>Dollar Cost Averaging</li>
+                <li>Análise de risco</li>
+            </ul>
+            <button class="w-full py-2 bg-[#262d3f] text-white rounded-md flex items-center justify-center gap-2">
+                <i data-lucide="play" class="w-5 h-5"></i> Acessar Conteúdo
+            </button>
+        </div>
+
+        <!-- Bloco 3 -->
+        <div class="bg-white p-6 rounded-lg shadow relative">
+            <span class="absolute top-4 right-4 bg-purple-100 text-purple-600 text-sm px-3 py-1 rounded-full">Pro</span>
+            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-purple-100 text-purple-600 mb-4">
+                <i data-lucide="wallet" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Planejamento Tributário</h2>
+            <p class="text-gray-600 mb-4">Como otimizar seus impostos legalmente</p>
+            <ul class="list-disc list-inside text-gray-700 space-y-1 mb-4">
+                <li>Imposto de Renda em investimentos</li>
+                <li>Regime de tributação</li>
+                <li>Deduções de IR</li>
+                <li>Previdência privada</li>
+            </ul>
+            <button class="w-full py-2 bg-[#262d3f] text-white rounded-md flex items-center justify-center gap-2">
+                <i data-lucide="play" class="w-5 h-5"></i> Acessar Conteúdo
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Ferramentas -->
+<div id="ferramentas" class="tab-content hidden">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Simulador de Juros Compostos -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="calculator" class="w-5 h-5 text-blue-600"></i>
+                Simulador de Juros Compostos
+            </h2>
+            <p class="text-gray-600 mb-4">Descubra quanto seu dinheiro pode render ao longo do tempo</p>
+
+            <label class="block text-sm font-medium text-gray-700">Valor Inicial (R$)</label>
+            <input type="number" id="valorInicial" placeholder="Ex: 1000" class="w-full p-2 border rounded mb-3">
+
+            <label class="block text-sm font-medium text-gray-700">Taxa de Juros (%)</label>
+            <input type="number" id="juros" placeholder="Ex: 10" class="w-full p-2 border rounded mb-3">
+
+            <label class="block text-sm font-medium text-gray-700">Período (anos)</label>
+            <input type="number" id="anos" placeholder="Ex: 2" class="w-full p-2 border rounded mb-4">
+
+            <button onclick="calcularJuros()"
+                class="w-full py-2 bg-[#262d3f] text-white rounded-md flex items-center justify-center gap-2">
+                <i data-lucide="calculator" class="w-5 h-5"></i> Simular
+            </button>
+
+            <!-- Resultado do simulador de juros -->
+            <div id="resultadoJuros" class="mt-4 hidden bg-blue-50 p-4 rounded-lg text-blue-800"></div>
+        </div>
+
+        <!-- Simulador de Metas -->
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="target" class="w-5 h-5 text-green-600"></i>
+                Simulador de Metas
+            </h2>
+            <p class="text-gray-600 mb-4">Descubra quanto tempo levará para atingir suas metas</p>
+
+            <label class="block text-sm font-medium text-gray-700">Meta (R$)</label>
+            <input type="number" id="meta" placeholder="Ex: 10000" class="w-full p-2 border rounded mb-3">
+
+            <label class="block text-sm font-medium text-gray-700">Valor Mensal (R$)</label>
+            <input type="number" id="mensal" placeholder="Ex: 500" class="w-full p-2 border rounded mb-3">
+
+            <label class="block text-sm font-medium text-gray-700">Valor Atual (R$)</label>
+            <input type="number" id="atual" placeholder="Ex: 1000 (opcional)" class="w-full p-2 border rounded mb-4">
+
+            <button onclick="calcularMeta()"
+                class="w-full py-2 bg-[#262d3f] text-white rounded-md flex items-center justify-center gap-2">
+                <i data-lucide="target" class="w-5 h-5"></i> Simular
+            </button>
+
+            <!-- Resultado do simulador de metas -->
+            <div id="resultadoMeta" class="mt-4 hidden bg-blue-50 p-4 rounded-lg text-blue-800"></div>
+        </div>
+    </div>
+
+
+</div>
+</div>
+
+<!-- Script Tabs + Lucide -->
+<script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => {
+                t.classList.remove('bg-white', 'text-black', 'shadow-sm');
+                t.classList.add('text-gray-600');
+            });
+            tab.classList.add('bg-white', 'text-black', 'shadow-sm');
+            tab.classList.remove('text-gray-600');
+            contents.forEach(c => c.classList.add('hidden'));
+            document.getElementById(tab.dataset.tab).classList.remove('hidden');
+        });
+    });
+
+    // Ativa os ícones do Lucide
+    lucide.createIcons();
+    function calcularJuros() {
+        let valor = parseFloat(document.getElementById("valorInicial").value) || 0;
+        let taxa = parseFloat(document.getElementById("taxa").value) / 100;
+        let anos = parseInt(document.getElementById("periodo").value) || 0;
+
+        let montante = valor * Math.pow((1 + taxa), anos);
+
+        document.getElementById("resultado").innerHTML =
+            `📈 Em ${anos} anos você terá <b>R$ ${montante.toFixed(2)}</b>`;
+    }
+    function calcularJuros() {
+        let valorInicial = parseFloat(document.getElementById("valorInicial").value) || 0;
+        let juros = parseFloat(document.getElementById("juros").value) / 100 || 0;
+        let anos = parseFloat(document.getElementById("anos").value) || 0;
+        let resultadoDiv = document.getElementById("resultadoJuros");
+
+        if (valorInicial <= 0 || juros <= 0 || anos <= 0) {
+            resultadoDiv.innerHTML = "<b>⚠️ Preencha todos os campos corretamente.</b>";
+            resultadoDiv.classList.remove("hidden");
+            return;
+        }
+
+        let valorFinal = valorInicial * Math.pow((1 + juros), anos);
+        let jurosGanhos = valorFinal - valorInicial;
+
+        resultadoDiv.innerHTML = `
+    <p><b>Resultado:</b></p>
+    <p>Valor inicial: R$ ${valorInicial.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+    <p>Juros ganhos: R$ ${jurosGanhos.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+    <p>Valor final: R$ ${valorFinal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+  `;
+        resultadoDiv.classList.remove("hidden");
+    }
+
+    function calcularMeta() {
+        let meta = parseFloat(document.getElementById("meta").value) || 0;
+        let mensal = parseFloat(document.getElementById("mensal").value) || 0;
+        let atual = parseFloat(document.getElementById("atual").value) || 0;
+        let resultadoDiv = document.getElementById("resultadoMeta");
+
+        if (meta <= 0 || mensal <= 0) {
+            resultadoDiv.innerHTML = "<b>⚠️ Preencha todos os campos corretamente.</b>";
+            resultadoDiv.classList.remove("hidden");
+            return;
+        }
+
+        let meses = Math.ceil((meta - atual) / mensal);
+
+        if (meses <= 0) {
+            resultadoDiv.innerHTML = "<b>🎉 Você já atingiu sua meta!</b>";
+            resultadoDiv.classList.remove("hidden");
+            return;
+        }
+
+        let anos = Math.floor(meses / 12);
+        let restoMeses = meses % 12;
+
+        resultadoDiv.innerHTML = `
+    <p><b>Resultado:</b></p>
+    <p>Meta desejada: R$ ${meta.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+    <p>Valor mensal: R$ ${mensal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</p>
+    <p>Tempo estimado: ${anos} anos e ${restoMeses} meses</p>
+  `;
+        resultadoDiv.classList.remove("hidden");
+    }
+    function toggleExtra(id, btn) {
+        const content = document.getElementById(id);
+        content.classList.toggle("hidden");
+
+        if (content.classList.contains("hidden")) {
+            btn.innerText = "Ver Mais ↓";
+        } else {
+            btn.innerText = "Ver Menos ↑";
+        }
+    }
+
+</script>
+
+
+{% endblock %}
