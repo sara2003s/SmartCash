@@ -11,7 +11,6 @@
     <div class="flex items-center gap-4 mb-10">
         <a href="{% url 'financas:conexoes_bancarias' %}" class="text-gray-600 font-medium flex items-center gap-2">
             <i data-lucide="arrow-left" class="w-6 h-6"></i>
-            Voltar
         </a>
         <h1 class="text-3xl font-bold text-black-800">Nova Conexão</h1>
     </div>
@@ -38,7 +37,7 @@
             <p class="text-gray-600 text-center mb-6">Conecte seu cartão de crédito para acompanhar gastos
                 automaticamente</p>
 
-            <a href="{% url 'financas:conectar_conta' %}"
+            <a href="{% url 'financas:conectar_cartao' %}"
                 class="w-full text-center py-3 px-6 rounded-lg bg-white text-black-800 font-semibold border border-gray-200 hover:bg-gray-300 transition-colors">
                 Conectar Cartão
             </a>
@@ -58,6 +57,7 @@
     <script>
         // Ativa os ícones do Lucide
         lucide.createIcons();
+        
     </script>
 
     {% endblock %}

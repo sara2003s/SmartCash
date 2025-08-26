@@ -18,7 +18,8 @@ urlpatterns = [
     path("configuracoes/", views.configuracoes, name="configuracoes"),
     path('configuracao-inicial/', views.configuracao_inicial, name='configuracao_inicial'),
     path('conexoes/nova/', views.nova_conexao, name='nova_conexao'),
-    path('conectar-conta', views.conectar_conta, name='conectar_conta' )  
+    path('conectar-conta/', views.conectar_conta, name='conectar_conta' ),
+    path('conectar-cartao/', views.conectar_cartao, name='conectar_cartao')  
 
 ]
 

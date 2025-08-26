@@ -62,3 +62,27 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+class ContaBancaria(models.Model):
+    """
+    Representa uma conta bancária conectada pelo usuário.
+    """
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    banco = models.CharField(max_length=100)
+    agencia = models.CharField(max_length=20)
+    numero_conta = models.CharField(max_length=30)
+    data_conectar = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.banco} - {self.numero_conta}"
+    
+class CartaoDeCredito(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    nome_cartao = models.CharField(max_length=255)
+    tipo = models.CharField(max_length=50, blank=True) # Campo para o tipo do cartão
+    validade = models.CharField(max_length=5, blank=True) # Campo para a validade MM/AA
+    numero_cartao = models.CharField(max_length=16) 
+    data_conectar = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nome_cartao} - **** {self.numero_cartao[-4:]}"

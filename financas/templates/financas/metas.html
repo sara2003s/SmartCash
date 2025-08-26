@@ -13,8 +13,10 @@
 
     <div class="flex justify-between items-center mb-2">
         <h1 class="text-3xl font-bold">Minhas Metas</h1>
-        <button class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <button
+            class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-5 h-5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
             Nova Meta
@@ -39,7 +41,7 @@
                 <p class="text-3xl font-bold mt-1">{{ metas_concluidas_count }}</p>
             </div>
             <div class="">
-                <img src="{% static 'img/trending-up.png' %}" alt="Ícone de Metas Concluídas" class="w-6 h-6">
+                <img src="{% static 'img/trending-up (1).png' %}" alt="Ícone de Metas Concluídas" class="w-6 h-6">
             </div>
         </div>
 
@@ -68,14 +70,15 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <img src="{% static 'img/trash-2.png' %}"
-                    <span class="text-xs font-medium px-2 py-1 rounded-full 
+                    <img src="{% static 'img/trash-2.png' %}" <span class="text-xs font-medium px-2 py-1 rounded-full 
                         {% if meta.concluida %}Concluída{% else %}Ativa{% endif %}
                     </span>
                     <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.93a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .596c.545-.183 1.1-.358 1.66-.517M12 21.75l-1.5-1.5m-6.75 1.5-1.5-1.5M9 19.5l-1.5-1.5M6 16.5l-1.5-1.5M3 13.5l-1.5-1.5M1.5 10.5h.008m6.75-8.25h12.75c1.38 0 2.5 1.12 2.5 2.5v12.75c0 1.38-1.12 2.5-2.5 2.5H6.75c-1.38 0-2.5-1.12-2.5-2.5V8.25c0-1.38 1.12-2.5 2.5-2.5Z" />
-                        </svg>
+                        <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.93a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .596c.545-.183 1.1-.358 1.66-.517M12 21.75l-1.5-1.5m-6.75 1.5-1.5-1.5M9 19.5l-1.5-1.5M6 16.5l-1.5-1.5M3 13.5l-1.5-1.5M1.5 10.5h.008m6.75-8.25h12.75c1.38 0 2.5 1.12 2.5 2.5v12.75c0 1.38-1.12 2.5-2.5 2.5H6.75c-1.38 0-2.5-1.12-2.5-2.5V8.25c0-1.38 1.12-2.5 2.5-2.5Z" />
+                    </svg>
                     </button>
                 </div>
             </div>
@@ -83,24 +86,26 @@
             <div class="mb-4">
                 <div class="flex justify-between text-sm text-gray-600 font-medium">
                     <span>Progresso</span>
-                    <span>R$ {{ meta.valor_atual|floatformat:2|intcomma }} / R$ {{ meta.valor_alvo|floatformat:2|intcomma }}</span>
+                    <span>R$ {{ meta.valor_atual|floatformat:2|intcomma }} / R$ {{meta.valor_alvo|floatformat:2|intcomma }}</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1.5">
-                    <div class="bg-[#272e3f] h-2.5 rounded-full" style="width: {{ meta.porcentagem_progresso|default:0|floatformat:0|add:'0' }}%"></div>
+                    <div class="bg-[#272e3f] h-2.5 rounded-full"style="width: {{ meta.porcentagem_progresso|default:0|floatformat:0|add:'0' }}%"></div>
                 </div>
                 <p class="text-xs text-gray-500 mt-1">{{ meta.porcentagem_progresso|floatformat:0 }}% concluído</p>
             </div>
-            
+
             <p class="text-xs text-gray-500">Prazo: {{ meta.data_limite|date:"d/m/Y" }}</p>
 
-            <button class="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 bg-[#272e3f] text-[#ffffff] rounded-lg shadow-sm hover:bg-[#56658b] transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <button
+                class="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 bg-[#272e3f] text-[#ffffff] rounded-lg shadow-sm hover:bg-[#56658b] transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 Adicionar Dinheiro
             </button>
         </div>
-    {% endfor %}
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

@@ -5,9 +5,14 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from datetime import datetime
+from decimal import Decimal
 from django.db.models.functions import TruncMonth
 from .forms import PerfilForm, SuporteForm
+from .models import ContaBancaria
+import re
+from .models import CartaoDeCredito
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.utils import timezone
 
 def login_view(request):
     if request.method == 'POST':
@@ -102,49 +107,97 @@ def metas(request):
 
 @login_required
 def dashboard(request):
-    entradas = Transacao.objects.filter(usuario=request.user, tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or 0
-    saidas = Transacao.objects.filter(usuario=request.user, tipo='saida').aggregate(Sum('valor'))['valor__sum'] or 0
-    saldo = entradas - saidas
+    try:
+        # Dados para os cards
+        entradas = Transacao.objects.filter(usuario=request.user, tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or Decimal('0.00')
+        saidas = Transacao.objects.filter(usuario=request.user, tipo='saida').aggregate(Sum('valor'))['valor__sum'] or Decimal('0.00')
+        saldo = entradas - saidas
 
-    meta = Meta.objects.filter(usuario=request.user).first()
-    meta_valor = meta.valor_atual if meta else 0
-    meta_total = meta.valor_alvo if meta else 0
+        meta = Meta.objects.filter(usuario=request.user).first()
+        meta_valor = meta.valor_atual if meta else Decimal('0.00')
+        meta_total = meta.valor_alvo if meta else Decimal('0.00')
+        meta_progresso = (meta_valor / meta_total) * 100 if meta_total > 0 else 0
 
-    gastos_por_categoria = Transacao.objects.filter(
-        usuario=request.user, 
-        tipo='saida'
-    ).values('categoria__nome', 'categoria__cor').annotate(
-        total_gasto=Sum('valor')
-    ).order_by('-total_gasto')
-
-    total_gastos = sum(item['total_gasto'] for item in gastos_por_categoria)
-    
-    gastos_detalhados = []
-    for item in gastos_por_categoria:
-        porcentagem = (item['total_gasto'] / total_gastos) * 100 if total_gastos > 0 else 0
-        gastos_detalhados.append({
-            'nome': item['categoria__nome'],
-            'cor': item['categoria__cor'], 
-            'valor': item['total_gasto'],
-            'porcentagem': porcentagem
-        })
+        gastos_por_categoria = Transacao.objects.filter(
+            usuario=request.user,
+            tipo='saida'
+        ).values('categoria__nome', 'categoria__cor').annotate(
+            total_gasto=Sum('valor')
+        ).order_by('-total_gasto')
         
-    expenses_labels = [item['categoria__nome'] for item in gastos_por_categoria]
-    expenses_data = [item['total_gasto'] for item in gastos_por_categoria]
+        gastos_detalhados = []
+        if gastos_por_categoria:
+            total_gastos_pizza = sum(item['total_gasto'] for item in gastos_por_categoria)
+            for item in gastos_por_categoria:
+                porcentagem = (item['total_gasto'] / total_gastos_pizza) * 100 if total_gastos_pizza > 0 else 0
+                gastos_detalhados.append({
+                    'nome': item['categoria__nome'],
+                    'cor': item['categoria__cor'],
+                    'valor': item['total_gasto'],
+                    'porcentagem': porcentagem
+                })
+        
+        expenses_labels = [g['nome'] for g in gastos_detalhados]
+        expenses_data = [g['valor'] for g in gastos_detalhados]
 
-    transacoes_recentes = Transacao.objects.filter(usuario=request.user).order_by('-data')[:6]
+        meses_labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago',]
+        hoje = timezone.now()
+        mes_atual = hoje.month
+        meses_ordenados = [meses_labels[(mes_atual - 6 + i) % 12] for i in range(6)]
+        
+        receitas_mensais = [
+            Transacao.objects.filter(
+                usuario=request.user,
+                tipo='entrada',
+                data__year=(hoje - timezone.timedelta(days=30*i)).year,
+                data__month=(hoje - timezone.timedelta(days=30*i)).month
+            ).aggregate(Sum('valor'))['valor__sum'] or 0 for i in range(5, -1, -1)
+        ]
+
+        gastos_mensais = [
+            Transacao.objects.filter(
+                usuario=request.user,
+                tipo='saida',
+                data__year=(hoje - timezone.timedelta(days=30*i)).year,
+                data__month=(hoje - timezone.timedelta(days=30*i)).month
+            ).aggregate(Sum('valor'))['valor__sum'] or 0 for i in range(5, -1, -1)
+        ]
+
+        transacoes_recentes = Transacao.objects.filter(usuario=request.user).order_by('-data')[:6]
+
+    except Exception as e:
+        print(f"Erro ao buscar dados do dashboard: {e}")
+        entradas = Decimal('0.00')
+        saidas = Decimal('0.00')
+        saldo = Decimal('0.00')
+        meta_valor = Decimal('0.00')
+        meta_total = Decimal('0.00')
+        meta_progresso = 0
+        expenses_labels = []
+        expenses_data = []
+        gastos_detalhados = []
+        transacoes_recentes = []
+        meses_labels = ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago']
+        receitas_mensais = [0, 0, 0, 0, 0, 0]
+        gastos_mensais = [0, 0, 0, 0, 0, 0]
+
 
     context = {
-        'saldo': f"{saldo:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'), 
-        'entradas': f"{entradas:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
-        'saidas': f"{saidas:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
-        'meta': f"{meta_valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
-        'meta_total': f"{meta_total:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'),
+        'saldo': saldo,
+        'entradas': entradas,
+        'saidas': saidas,
+        'meta_valor': meta_valor,
+        'meta_total': meta_total,
+        'meta_progresso': meta_progresso,
         'expenses_labels': expenses_labels,
         'expenses_data': expenses_data,
         'gastos_detalhados': gastos_detalhados,
         'transacoes_recentes': transacoes_recentes,
+        'meses_labels': meses_labels,
+        'receitas_mensais': receitas_mensais,
+        'gastos_mensais': gastos_mensais,
     }
+
     return render(request, "financas/dashboard.html", context)
 
 @login_required
@@ -231,9 +284,75 @@ def nova_conexao(request):
 
 @login_required
 def conectar_conta(request):
+    if request.method == "POST":
+        banco = request.POST.get("banco")
+        numero_conta = request.POST.get("numero_conta")
+        agencia = request.POST.get("agencia")
+
+        # --- Validação de Backend ---
+        # 1. Verifique se os campos obrigatórios estão preenchidos
+        if not banco or not numero_conta or not agencia:
+            messages.error(request, "Todos os campos são obrigatórios.")
+            return render(request, "financas/conectar_conta.html")
+        
+        # 2. Verifique o formato dos campos (exemplo)
+        # O número da conta deve ter apenas números e um traço opcional
+        if not re.match(r'^[0-9-]+$', numero_conta):
+            messages.error(request, "O formato do número da conta é inválido.")
+            return render(request, "financas/conectar_conta.html")
+        
+        # A agência deve ter apenas 4 ou 5 dígitos
+        if not re.match(r'^[0-9]{4,5}$', agencia):
+            messages.error(request, "A agência deve conter 4 ou 5 dígitos numéricos.")
+            return render(request, "financas/conectar_conta.html")
+
+        try:
+            ContaBancaria.objects.create(
+                usuario=request.user, 
+                banco=banco, 
+                numero_conta=numero_conta, 
+                agencia=agencia
+            )
+            messages.success(request, "Conta adicionada com sucesso!")
+            return redirect("financas:conexoes_bancarias")
+        except Exception as e:
+            messages.error(request, f"Erro ao adicionar conta: {e}")
+            return render(request, "financas/conectar_conta.html")
+        
     return render(request, "financas/conectar_conta.html",{
         "sem_header": True 
     })
+
+@login_required
+def conectar_cartao(request):
+    if request.method == "POST":
+        nome_cartao = request.POST.get("nome_cartao")
+        tipo_cartao = request.POST.get("tipo_cartao") # Acessa o novo campo
+        numero_cartao = request.POST.get("numero_cartao")
+        validade = request.POST.get("validade") # Acessa o novo campo
+
+        if not nome_cartao or not tipo_cartao or not numero_cartao or not validade:
+            messages.error(request, "Por favor, preencha todos os campos obrigatórios.")
+            return render(request, "financas/conectar_cartao.html")
+
+        try:
+            CartaoDeCredito.objects.create(
+                usuario=request.user, 
+                nome_cartao=nome_cartao,
+                tipo=tipo_cartao,
+                validade=validade,
+                numero_cartao=numero_cartao
+            )
+            messages.success(request, "Cartão de crédito adicionado com sucesso!")
+            return redirect("financas:conexoes_bancarias")
+        except Exception as e:
+            messages.error(request, f"Erro ao adicionar cartão: {e}")
+            return render(request, "financas/conectar_cartao.html")
+    
+    return render(request, "financas/conectar_cartao.html",{
+        "sem_header":True
+    })
+
 
 @login_required
 def educacao_2(request):
