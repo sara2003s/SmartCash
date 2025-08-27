@@ -24,7 +24,6 @@ class Transacao(models.Model):
 		return f"{self.tipo} - {self.valor} em {self.data}"
 	
 class Meta(models.Model):
-    # Relacionamento com o usuário que criou a meta
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     
     nome = models.CharField(max_length=200)
@@ -64,9 +63,7 @@ class Profile(models.Model):
         return self.user.username
     
 class ContaBancaria(models.Model):
-    """
-    Representa uma conta bancária conectada pelo usuário.
-    """
+
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     banco = models.CharField(max_length=100)
     agencia = models.CharField(max_length=20)
@@ -79,8 +76,8 @@ class ContaBancaria(models.Model):
 class CartaoDeCredito(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     nome_cartao = models.CharField(max_length=255)
-    tipo = models.CharField(max_length=50, blank=True) # Campo para o tipo do cartão
-    validade = models.CharField(max_length=5, blank=True) # Campo para a validade MM/AA
+    tipo = models.CharField(max_length=50, blank=True)
+    validade = models.CharField(max_length=5, blank=True) 
     numero_cartao = models.CharField(max_length=16) 
     data_conectar = models.DateTimeField(auto_now_add=True)
 

@@ -26,11 +26,11 @@
         </div>
         <div class="bg-white shadow rounded p-4">
             <h2 class="text-gray-600">Receitas</h2>
-            <p class="text-2xl font-bold text-blue-600">
+            <p class="text-2xl font-bold text-black-600">
                 R$ {{ entradas|floatformat:2|intcomma }}
             </p>
             {% if entradas > 0 %}
-            <p class="text-sm text-gray-500">↑ Recebeu um total de R$ {{ entradas|floatformat:2|intcomma }} em receitas.
+            <p class="text-sm text-gray-500"> Recebeu um total de R$ {{ entradas|floatformat:2|intcomma }} em receitas.
             </p>
             {% else %}
             <p class="text-sm text-gray-500">Nenhuma receita registrada ainda.</p>

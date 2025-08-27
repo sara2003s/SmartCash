@@ -13,6 +13,7 @@ import re
 from .models import CartaoDeCredito
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.utils import timezone
+from django.db.models.functions import TruncMonth
 
 def login_view(request):
     if request.method == 'POST':
@@ -202,60 +203,60 @@ def dashboard(request):
 
 @login_required
 def transacoes(request):
-    transacoes = Transacao.objects.filter(usuario=request.user).order_by('-data')
-    categorias = Categoria.objects.all()
+    # --- FILTROS ---
+    transacoes_qs = Transacao.objects.filter(usuario=request.user).order_by('-data')
+    categorias_qs = Categoria.objects.all()
 
-    # --- LISTA DE PERÍODOS DINÂMICA ---
+    # Lista de nomes de meses em português
+    meses_pt = [
+        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ]
+
+    # Prepara os períodos para o filtro (meses dinâmicos)
     periodos_qs = (
-        transacoes
+        transacoes_qs
         .annotate(mes=TruncMonth("data"))
         .values_list("mes", flat=True)
         .distinct()
         .order_by("-mes")
     )
-    periodos = [d.strftime("%B %Y").capitalize() for d in periodos_qs]
+    # Usa os nomes em português para a lista de períodos
+    periodos = [f"{meses_pt[d.month-1]} {d.year}" for d in periodos_qs]
 
-    # --- FILTROS ---
     q = request.GET.get("q")
     categoria = request.GET.get("categoria")
     tipo = request.GET.get("tipo")
     periodo = request.GET.get("periodo")
 
+    # Aplica os filtros na ordem
     if q:
-        transacoes = transacoes.filter(descricao__icontains=q)
-
+        transacoes_qs = transacoes_qs.filter(nome__icontains=q)
     if categoria:
-        transacoes = transacoes.filter(categoria_id=categoria)
-
+        transacoes_qs = transacoes_qs.filter(categoria_id=categoria)
     if tipo:
-        transacoes = transacoes.filter(tipo=tipo)
-
+        transacoes_qs = transacoes_qs.filter(tipo=tipo)
     if periodo and periodo != "Todos os períodos":
         try:
             mes_nome, ano = periodo.split(" ")
-            meses = {
-                "janeiro": 1, "fevereiro": 2, "março": 3, "abril": 4,
-                "maio": 5, "junho": 6, "julho": 7, "agosto": 8,
-                "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12
-            }
-            mes = meses.get(mes_nome.lower())
+            meses_map = {m.lower(): i+1 for i, m in enumerate(meses_pt)}
+            mes = meses_map.get(mes_nome.lower())
             ano = int(ano)
-            transacoes = transacoes.filter(data__month=mes, data__year=ano)
+            transacoes_qs = transacoes_qs.filter(data__month=mes, data__year=ano)
         except:
             pass
 
-    # --- RESUMO (sempre baseado nos filtros aplicados) ---
-    total_receitas = transacoes.filter(tipo="receita").aggregate(Sum("valor"))["valor__sum"] or 0
-    total_despesas = transacoes.filter(tipo="despesa").aggregate(Sum("valor"))["valor__sum"] or 0
+    total_receitas = transacoes_qs.filter(tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or Decimal('0.00')
+    total_despesas = transacoes_qs.filter(tipo='saida').aggregate(Sum('valor'))['valor__sum'] or Decimal('0.00')
     saldo = total_receitas - total_despesas
 
     context = {
-        "transacoes": transacoes,
-        "categorias": categorias,
+        "transacoes": transacoes_qs,
+        "categorias": categorias_qs,
         "periodos": periodos,
-        "total_receitas": f"{total_receitas:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
-        "total_despesas": f"{total_despesas:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
-        "saldo": f"{saldo:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+        "total_receitas": total_receitas,
+        "total_despesas": total_despesas,
+        "saldo": saldo,
         "sem_header": True,
     }
     return render(request, "financas/transacoes.html", context)

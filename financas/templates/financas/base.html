@@ -1,4 +1,5 @@
 {% load static %}
+<script src="https://unpkg.com/lucide@latest"></script><script src="https://unpkg.com/lucide@latest"></script>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -26,23 +27,35 @@
     <!-- Menu -->
     <h4 class="uppercase text-xs font-semibold text-black-400 mb-2">Menu</h4>
     <nav class="flex flex-col gap-2">
-      <a href="{% url 'dashboard' %}" class=" flex items-center gap-2 p-2 rounded hover:bg-gray-100"">
-      <span>📊</span> Dashboard
+      <a href="{% url 'dashboard' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+      <span>
+        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+      </span> Dashboard
     </a>
     <a href=" {% url 'financas:metas' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
-        <span>🎯</span> Metas
+        <span>
+          <i data-lucide="target" class="w-4 h-4"></i>
+        </span> Metas
       </a>
       <a href="{% url 'financas:transacoes' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
-        <span>💵</span> Transações
+        <span>
+          <i data-lucide="receipt" class="w-4 h-4"></i>
+        </span> Transações
       </a>
       <a href="{% url 'financas:conexoes_bancarias' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
-        <span>🏦</span> Conexões Bancárias
+        <span>
+          <i data-lucide="upload" class="w-4 h-4"></i>
+        </span> Conexões Bancárias
       </a>
       <a href="{% url 'financas:educacao_2' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
-        <span>📚</span> Educação
+        <span>
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+        </span> Educação
       </a>
       <a href="{% url 'financas:configuracoes' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
-        <span>⚙️</span> Configurações
+        <span>
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </span> Configurações
       </a>
     </nav>
     <!-- Parte de baixo: Linha separadora + Botão sair -->
@@ -78,3 +91,8 @@
 </body>
 
 </html>
+ <script>
+        // Ativa os ícones do Lucide
+        lucide.createIcons();
+        
+    </script>
