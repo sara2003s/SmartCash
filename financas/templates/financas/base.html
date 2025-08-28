@@ -1,5 +1,6 @@
 {% load static %}
-<script src="https://unpkg.com/lucide@latest"></script><script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -28,11 +29,11 @@
     <h4 class="uppercase text-xs font-semibold text-black-400 mb-2">Menu</h4>
     <nav class="flex flex-col gap-2">
       <a href="{% url 'dashboard' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
-      <span>
-        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-      </span> Dashboard
-    </a>
-    <a href=" {% url 'financas:metas' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
+        <span>
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+        </span> Dashboard
+      </a>
+      <a href=" {% url 'financas:metas' %}" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100">
         <span>
           <i data-lucide="target" class="w-4 h-4"></i>
         </span> Metas
@@ -78,10 +79,12 @@
           class="bg-white border border-blue-500 text-blue-600 px-3 py-1 rounded-full font-medium hover:bg-blue-50 transition">
           Plano Premium
         </button>
-        <button class="bg-blue-600 text-white px-3 py-1 rounded">Upload Extrato</button>
+        <button onclick="abrirModal()" class="bg-blue-600 text-white px-3 py-1 rounded">
+          Importar Extrato
+        </button>
       </div>
     </header>
-     {% endblock %}
+    {% endblock %}
     {% endif %}
     <main class="ml-64 p-6">
       {% block content %}
@@ -89,10 +92,75 @@
     </main>
   </div>
 </body>
+<!-- Modal Importar Extrato -->
+<div id="modalExtrato" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+
+    <!-- Botão Fechar -->
+    <button onclick="fecharModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
+      <img src="/static/img/x.png" alt="Upload" class="w-6 h-6">
+    </button>
+
+    <!-- Conteúdo do Modal -->
+    <h2 class="text-xl font-medium flex items-center gap-2 mb-2">
+      <img src="/static/img/upload (1).png" alt="Upload" class="w-6 h-6">
+      Upload de Extrato Bancário
+    </h2>
+    <p class="text-gray-600 text-sm mb-4">
+      Envie seu extrato em formato CSV, OFX ou XLSX para análise automática
+    </p>
+
+    <!-- Caixa de Upload -->
+    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+      <div class="flex justify-center items-center h-20">
+        <img src="/static/img/upload (1).png" alt="Upload" class="w-12 h-12">
+      </div>
+      <p class="font-semibold text-[#4f5866] mb-2">Arraste seu arquivo aqui</p>
+      <p class="text-[#4f5866] text-sm mb-6">ou clique para selecionar</p>
+
+      <label class="cursor-pointer bg-white border border-gray-200 text-black px-4 py-2 rounded-lg hover:bg-[#eff6ff]">
+        Selecionar Arquivo
+        <input type="file" class="hidden" accept=".csv,.ofx,.xlsx" />
+      </label>
+
+      <p class="text-xs text-gray-400 mt-6">Formatos aceitos: CSV, XLSX, OFX (máx. 10MB)</p>
+    </div>
+
+    <!-- Instruções -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6 text-sm">
+      <p class="font-semibold text-[#1e3a8a]"> Como obter seu extrato:</p>
+      <ul class="list-disc list-inside text-[#1e3a8a] mt-2">
+        <li>Acesse o app ou site do seu banco</li>
+        <li>Vá em "Extratos" ou "Movimentação"</li>
+        <li>Selecione o período desejado</li>
+        <li>Exporte em formato CSV, OFX ou XLSX</li>
+      </ul>
+    </div>
+    <!-- Segurança -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-sm">
+      <div class="flex items-center gap-1 font-semibold text-gray-700">
+        <img src="{% static 'img/info.png' %}" alt="informações" class="w-4 h-4">
+        Segurança dos seus dados
+      </div>
+      <p class="text-gray-500 mt-1">
+        Seus extratos são processados localmente e criptografados.
+        Não armazenamos informações sensíveis como números de conta.
+      </p>
+    </div>
+
+  </div>
+</div>
 
 </html>
- <script>
-        // Ativa os ícones do Lucide
-        lucide.createIcons();
-        
-    </script>
+<script>
+  // Ativa os ícones do Lucide
+  lucide.createIcons();
+
+  function abrirModal() {
+    document.getElementById('modalExtrato').classList.remove('hidden');
+  }
+  function fecharModal() {
+    document.getElementById('modalExtrato').classList.add('hidden');
+  }
+
+</script>

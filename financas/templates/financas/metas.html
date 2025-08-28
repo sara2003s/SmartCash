@@ -9,16 +9,12 @@
 
 {% block content %}
 
-<div class="container mx-auto p-1">
+<div class="p-1">
 
     <div class="flex justify-between items-center mb-2">
         <h1 class="text-3xl font-bold">Minhas Metas</h1>
-        <button
+        <button onclick="abrirModalCriarMeta()"
             class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
             Nova Meta
         </button>
     </div>
@@ -70,43 +66,162 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <img>
-                    <img src="{% static 'img/trash-2.png' %}" <span class="text-xs font-medium px-2 py-1 rounded-full 
-                        {% if meta.concluida %}Concluída{% else %}Ativa{% endif %}
 
-                    <button>
-                        <svg xmlns=" http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.93a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .596c.545-.183 1.1-.358 1.66-.517M12 21.75l-1.5-1.5m-6.75 1.5-1.5-1.5M9 19.5l-1.5-1.5M6 16.5l-1.5-1.5M3 13.5l-1.5-1.5M1.5 10.5h.008m6.75-8.25h12.75c1.38 0 2.5 1.12 2.5 2.5v12.75c0 1.38-1.12 2.5-2.5 2.5H6.75c-1.38 0-2.5-1.12-2.5-2.5V8.25c0-1.38 1.12-2.5 2.5-2.5Z" />
-                    </svg>
-                    </button>
+                    <form action="{% url 'financas:excluir_meta' meta.id %}" method="post"
+                        class="flex items-center gap-2">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <i data-lucide="trash-2" class="text-black w-6 h-6"></i>
+                        </button>
+                    </form>
                 </div>
             </div>
 
             <div class="mb-4">
                 <div class="flex justify-between text-sm text-gray-600 font-medium">
                     <span>Progresso</span>
-                    <span>R$ {{ meta.valor_atual|floatformat:2|intcomma }} / R$ {{meta.valor_alvo|floatformat:2|intcomma }}</span>
+                    <span>R$ {{ meta.valor_atual|floatformat:2|intcomma }} / R$ {{meta.valor_alvo|floatformat:2|intcomma}}</span>
                 </div>
                 <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1.5">
-                    <div class="bg-[#272e3f] h-2.5 rounded-full"style="width: {{ meta.porcentagem_progresso|default:0|floatformat:0|add:'0' }}%"></div>
+                    <div class="bg-[#272e3f] h-2.5 rounded-full"
+                        style="width: {{ meta.porcentagem_progresso|default:0|floatformat:0|add:'0' }}%"></div>
                 </div>
                 <p class="text-xs text-gray-500 mt-1">{{ meta.porcentagem_progresso|floatformat:0 }}% concluído</p>
             </div>
 
             <p class="text-xs text-gray-500">Prazo: {{ meta.data_limite|date:"d/m/Y" }}</p>
-
-            <button
+            <button onclick="toggleAdicionarDinheiro({{ meta.id }})"
                 class="mt-4 flex items-center justify-center gap-2 w-full px-4 py-2 bg-[#272e3f] text-[#ffffff] rounded-lg shadow-sm hover:bg-[#56658b] transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                    class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 Adicionar Dinheiro
             </button>
+            
+            <div id="form-{{ meta.id }}" class="hidden mt-4 bg-white-50 border border-[#dbeafe] p-4 rounded-lg">
+                <h4 class="flex items-center gap-2 py-4 font-medium rounded-md text-black">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600">
+                        <i data-lucide="piggy-bank" class="w-5 h-5"></i>
+                    </div>
+                    Adicionar dinheiro ao cofrinho
+                </h4>     <form action="{% url 'financas:adicionar_dinheiro' meta.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div>
+                            <label for="valor-{{ meta.id }}" class="block text-xs font-medium text-gray-600">Valor a
+                                adicionar</label>
+                            <input type="number" id="valor-{{ meta.id }}" name="valor_a_adicionar" placeholder="R$ 0,00"
+                                class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm" required>
+                        </div>
+                        <div>
+                            <label for="origem-{{ meta.id }}" class="block text-xs font-medium text-gray-600">De onde
+                                vem esse dinheiro?</label>
+                            <select id="banco" name="banco" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                                <option value="salario">Selecione a origem</option>
+                                <option value="Banco do Brasil">Banco do Brasil</option>
+                                <option value="Caixa Econômica Federal">Caixa Econômica Federal</option>
+                                <option value="Itaú">Itaú</option>
+                                <option value="Bradesco">Bradesco</option>
+                                <option value="Nubank">Nubank</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify- gap-2 mt-4">
+                        <button type="submit"
+                            class="flex items-center gap-2 py-2 px-5 border border-transparent text-xs font-medium rounded-md text-white bg-[#92b1f5]">
+                            <i data-lucide="piggy-bank" class="w-5 h-5"></i> Depositar
+                        </button>
+                        <button type="button" onclick="toggleAdicionarDinheiro({{ meta.id }})"
+                            class="py-2 px-5 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
+<div id="modalCriarMeta" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg relative" onclick="event.stopPropagation();">
+        <button onclick="fecharModalCriarMeta()"
+            class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
+        <h2 class="text-2xl font-bold mb-1">Criar Nova Meta</h2>
+        <p class="text-gray-600 mb-1">Defina um objetivo financeiro para acompanhar seu progresso</p>
+
+        <form action="{% url 'financas:criar_meta' %}" method="post" class="space-y-4">
+            {% csrf_token %}
+
+            <div>
+                <label for="titulo" class="block text-sm font-medium text-black-700 ">Título da Meta</label>
+                <input type="text" id="titulo" name="titulo" placeholder="Ex: Reserva de emergência"
+                    class="mt-1 block w-full rounded-md border border-black-300 px-3 py-2" required>
+            </div>
+
+            <div>
+                <label for="descricao" class="block text-sm font-medium text-black-700">Descrição</label>
+                <textarea id="descricao" name="descricao" placeholder="Descreva sua meta" rows="1"
+                    class="mt-1 block w-full rounded-md border border-black-300 px-3 py-2 "></textarea>
+            </div>
+
+            <div>
+                <label for="valor_objetivo" class="block text-sm font-medium text-black-700">Valor Objetivo (R$)</label>
+                <input type="number" id="valor_objetivo" name="valor_objetivo" placeholder="10000"
+                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2" required>
+            </div>
+
+            <div>
+                <label for="categoria" class="block text-sm font-medium text-black-700">Categoria</label>
+                <select id="categoria" name="categoria"
+                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+                    <option value="">Selecione a categoria</option>
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="data_limite" class="block text-sm font-medium text-black-700">Data Limite</label>
+                <input type="date" id="data_limite" name="data_limite"
+                    class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="submit"
+                    class="w-full justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#272e3f] hover:bg-[#3e4965] transition-colors">
+                    Criar Meta
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</div>
+</div>
+<script>
+    function toggleAdicionarDinheiro(metaId) {
+        var form = document.getElementById('form-' + metaId);
+        form.classList.toggle('hidden');
+    }
+
+    function abrirModalCriarMeta() {
+        document.getElementById('modalCriarMeta').classList.remove('hidden');
+    }
+
+    function fecharModalCriarMeta() {
+        document.getElementById('modalCriarMeta').classList.add('hidden');
+    }
+
+    function abrirModalAdicionarDinheiro(metaId) {
+        document.getElementById('modalMetaId').value = metaId;
+        document.getElementById('formAdicionarDinheiro').action = `/metas/adicionar_dinheiro/${metaId}/`;
+        document.getElementById('modalAdicionarDinheiro').classList.remove('hidden');
+    }
+
+    function fecharModalAdicionarDinheiro() {
+        document.getElementById('modalAdicionarDinheiro').classList.add('hidden');
+    }
+</script>
 {% endblock %}

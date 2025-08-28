@@ -1,4 +1,5 @@
 {% load static %}
+<script src="https://cdn.tailwindcss.com"></script>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -71,7 +72,9 @@
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
                     <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-blue-600 font-bold">⚡</span>
+                        <span class="text-blue-600 font-bold">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                        </span>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Análise Automática</h4>
                     <p>Upload seus extratos e receba análises instantâneas dos seus gastos por categoria</p>
@@ -408,6 +411,9 @@
 
 
     <script>
+          // Ativa os ícones do Lucide
+        lucide.createIcons();
+
         function mostrarTab(tab) {
             const formEmail = document.getElementById('form-email');
             const formUsuario = document.getElementById('form-usuario');

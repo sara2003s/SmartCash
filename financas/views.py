@@ -271,6 +271,67 @@ def metas_view(request):
     return render(request, "financas/metas.html")
 
 @login_required
+def criar_meta(request):
+    if request.method == "POST":
+        try:
+            nome = request.POST.get('titulo')
+            descricao = request.POST.get('descricao')
+            valor_alvo = request.POST.get('valor_objetivo')
+            categoria_id = request.POST.get('categoria')
+            data_limite = request.POST.get('data_limite')
+
+            categoria = Categoria.objects.get(id=categoria_id) if categoria_id else None
+
+            Meta.objects.create(
+                usuario=request.user,
+                nome=nome,
+                descricao=descricao,
+                valor_alvo=Decimal(valor_alvo),
+                data_limite=data_limite
+            )
+            messages.success(request, "Meta criada com sucesso!")
+            return redirect('financas:metas')
+
+        except Exception as e:
+            messages.error(request, f"Ocorreu um erro ao criar a meta: {e}")
+            return redirect('financas:metas')
+    
+    # Se não for um POST, redireciona de volta para a página de metas
+    return redirect('financas:metas')
+
+@login_required
+def excluir_meta(request, meta_id):
+    if request.method == "POST":
+        try:
+            meta = Meta.objects.get(id=meta_id, usuario=request.user)
+            meta.delete()
+            messages.success(request, "Meta excluída com sucesso!")
+        except Meta.DoesNotExist:
+            messages.error(request, "Meta não encontrada ou você não tem permissão para excluí-la.")
+    return redirect('financas:metas')
+
+@login_required
+def adicionar_dinheiro(request, meta_id):
+    if request.method == "POST":
+        try:
+            meta = Meta.objects.get(id=meta_id, usuario=request.user)
+            valor_a_adicionar = request.POST.get('valor_a_adicionar')
+            
+            if valor_a_adicionar:
+                valor_adicionado = Decimal(valor_a_adicionar)
+                meta.valor_atual += valor_adicionado
+                meta.save()
+
+                messages.success(request, f"R$ {valor_adicionado} adicionado à meta {meta.nome} com sucesso!")
+            
+        except Meta.DoesNotExist:
+            messages.error(request, "Meta não encontrada ou você não tem permissão para editá-la.")
+        except Exception as e:
+            messages.error(request, f"Ocorreu um erro: {e}")
+
+    return redirect('financas:metas')
+
+@login_required
 def conexoes_bancarias(request):    
     return render(request, "financas/conexoes_bancarias.html",{
         "sem_header": True        

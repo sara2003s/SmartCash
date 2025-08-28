@@ -19,7 +19,10 @@ urlpatterns = [
     path('configuracao-inicial/', views.configuracao_inicial, name='configuracao_inicial'),
     path('conexoes/nova/', views.nova_conexao, name='nova_conexao'),
     path('conectar-conta/', views.conectar_conta, name='conectar_conta' ),
-    path('conectar-cartao/', views.conectar_cartao, name='conectar_cartao')  
+    path('conectar-cartao/', views.conectar_cartao, name='conectar_cartao'),
+    path('metas/criar/', views.criar_meta, name='criar_meta'),
+    path('metas/excluir/<int:meta_id>/', views.excluir_meta, name='excluir_meta'),
+    path('metas/adicionar-dinheiro/<int:meta_id>/', views.adicionar_dinheiro, name='adicionar_dinheiro')
 
 ]
 

@@ -34,6 +34,7 @@ class Meta(models.Model):
     ativa = models.BooleanField(default=True)
     concluida = models.BooleanField(default=False)
     data_criacao = models.DateTimeField(auto_now_add=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
 
     def porcentagem_progresso(self):
         if self.valor_alvo > 0:
