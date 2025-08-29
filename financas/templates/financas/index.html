@@ -1,5 +1,5 @@
 {% load static %}
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -17,6 +17,7 @@
     <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-2">
+                <i data-lucide="piggy-bank" class="w-7 h-7 text-blue-600"></i>
                 <span
                     class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">SmartCash</span>
             </div>
@@ -71,45 +72,43 @@
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-blue-600 font-bold">
-                            <i data-lucide="zap" class="w-4 h-4"></i>
-                        </span>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 text-blue-600">
+                        <i data-lucide="zap" class="w-7 h-7"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Análise Automática</h4>
                     <p>Upload seus extratos e receba análises instantâneas dos seus gastos por categoria</p>
                 </div>
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-green-600 font-bold">📈</span>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4 text-green-600">
+                        <i data-lucide="trending-up" class="w-7 h-7"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Recomendações Inteligentes</h4>
                     <p>Dicas personalizadas baseadas no seu perfil de gastos para economizar mais</p>
                 </div>
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-purple-600 font-bold">📊</span>
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4 text-purple-600">
+                        <i data-lucide="layout-dashboard" class="w-7 h-7"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Dashboard Visual</h4>
                     <p>Gráficos interativos e métricas claras para acompanhar sua evolução financeira</p>
                 </div>
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
-                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-orange-600 font-bold">🎯</span>
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4 text-orange-600">
+                        <i data-lucide="target" class="w-7 h-7"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Metas Financeiras</h4>
                     <p>Defina objetivos e acompanhe seu progresso com metas personalizáveis</p>
                 </div>
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
-                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-red-600 font-bold">🛡️</span>
+                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4 text-red-600">
+                        <i data-lucide="shield" class="w-7 h-7"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Segurança Total</h4>
                     <p>Seus dados protegidos com criptografia de ponta e conformidade LGPD</p>
                 </div>
                 <div class="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 rounded-lg">
-                    <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
-                        <span class="text-teal-600 font-bold">👥</span>
+                    <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4 text-teal-600">
+                        <i data-lucide="users" class="w-7 h-7"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Família Smart</h4>
                     <p>Gerencie as finanças de toda a família com até 5 usuários e permissões configuráveis</p>
@@ -183,9 +182,10 @@
             <div class="grid md:grid-cols-4 gap-8">
                 <div>
                     <div class="flex items-center space-x-2 mb-4">
-                        <span class="text-xl font-bold">SmartCash</span>
+                        <i data-lucide="piggy-bank" class="w-5 h-5 text-blue-400"></i>
+                        <span
+                    class="text-1xl font-bold">SmartCash</span>
                     </div>
-
                     <p class="text-gray-400">Controle financeiro inteligente para sua vida corrida.</p>
                 </div>
                 <div>

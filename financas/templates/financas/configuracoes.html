@@ -6,12 +6,11 @@
 {% load static %}
 <!-- Importando Lucide -->
 <script src="https://unpkg.com/lucide@latest"></script>
-<h1 class="text-2xl font-bold mb-1">Configurações</h1>
-<p class="text-gray-600 mb-6">Gerencie sua conta e preferências</p>
+<h1 class="text-3xl font-bold mb-4">Configurações</h1>
+<p class="text-gray-600 mb-6">Gerencie sua conta e preferências.</p>
 
 <div class="space-y-8">
 
-    <!-- Informações Pessoais -->
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold flex items-center gap-2 mb-1">
             <i data-lucide="user" class="w-5 h-5"></i> Informações Pessoais
@@ -20,10 +19,29 @@
 
         <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {% csrf_token %}
-            {{ perfil_form.as_p }}
-
+            <div class="col-span-1">
+                <label for="id_first_name" class="block text-sm font-medium text-gray-700">Nome</label>
+                {{ user_form.first_name }}
+            </div>
+            <div class="col-span-1">
+                <label for="id_last_name" class="block text-sm font-medium text-gray-700">Sobrenome</label>
+                {{ user_form.last_name }}
+            </div>
             <div class="col-span-2">
-                <button type="submit" name="perfil_form"
+                <label for="id_email" class="block text-sm font-medium text-gray-700">E-mail</label>
+                {{ user_form.email }}
+            </div>
+            <div class="col-span-1">
+                <label for="id_cpf_rg" class="block text-sm font-medium text-gray-700">CPF/RG</label>
+                {{ profile_form.cpf_rg }}
+            </div>
+            <div class="col-span-1">
+                <label for="id_celular" class="block text-sm font-medium text-gray-700">Celular</label>
+                {{ profile_form.celular }}
+            </div>
+
+            <div class="col-span-2 mt-4 flex justify-end">
+                <button type="submit" name="perfil_submit"
                     class="px-4 py-2 bg-[#0f172a] text-white rounded-md flex items-center gap-2 hover:bg-[#1e293b]">
                     <i data-lucide="save" class="w-5 h-5"></i> Salvar Alterações
                 </button>
@@ -31,31 +49,28 @@
         </form>
     </div>
 
-    <!-- Contato com Suporte -->
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold flex items-center gap-2 mb-1">
             <i data-lucide="message-square" class="w-5 h-5"></i> Contato com Suporte
         </h2>
         <p class="text-sm text-gray-500 mb-6">Entre em contato conosco para dúvidas ou sugestões</p>
 
-        <form method="POST" class="space-y-4">
+        <form method="POST" name="suporte_form" class="space-y-4">
             {% csrf_token %}
             {{ suporte_form.as_p }}
-
             <div class="flex justify-between items-center">
                 <span class="flex items-center gap-2 text-gray-500 text-sm">
                     <i data-lucide="mail" class="w-4 h-4"></i>
                     suporte@smartcash.com
                 </span>
-
-                <button type="submit" name="suporte_form"
+                <button type="submit" name="suporte_submit"
                     class="px-4 py-2 bg-[#0f172a] text-white rounded-md flex items-center gap-2 hover:bg-[#1e293b]">
                     <i data-lucide="send" class="w-5 h-5"></i> Enviar Email
                 </button>
             </div>
         </form>
     </div>
-    <!-- Planos e Assinaturas -->
+
     <div class="bg-white rounded-lg shadow p-6">
         <h2 class="text-lg font-semibold flex items-center gap-2 mb-1">
             <i data-lucide="credit-card" class="w-5 h-5"></i> Planos Disponíveis
@@ -64,7 +79,6 @@
             Escolha o plano ideal para suas necessidades financeiras
         </p>
 
-        <!-- Status do Plano Atual -->
         <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6 flex justify-between items-center">
             <div>
                 <strong>Plano Atual: Premium</strong>
@@ -73,16 +87,13 @@
             <span class="px-3 py-1 bg-[#0f172a] text-white text-xs rounded-md">PREMIUM</span>
         </div>
 
-        <!-- Cards dos Planos -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <!-- Freemium -->
             <div class="border rounded-lg p-6 flex flex-col text-center bg-[#f9fafb]">
                 <i data-lucide="zap" class="w-8 h-8 text-blue-500 mb-2 mx-auto mb-2"></i>
                 <h3 class="text-lg font-bold">Freemium</h3>
                 <p class="text-blue-600 font-semibold">Gratuito</p>
                 <p class="text-sm text-gray-500 mb-4">Perfeito para começar</p>
-
                 <ul class="text-sm space-y-2 mb-6 text-left">
                     <li class="flex items-center gap-2">
                         <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
@@ -113,13 +124,11 @@
                         Suporte por email
                     </li>
                 </ul>
-
                 <button class="mt-auto bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800">
                     Escolher Freemium
                 </button>
             </div>
 
-            <!-- Pro -->
             <div class="border-2 border-blue-400 rounded-lg p-6 flex flex-col relative text-center bg-[#eff6ff]">
                 <span
                     class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">Mais
@@ -128,7 +137,6 @@
                 <h3 class="text-lg font-bold">Pro</h3>
                 <p class="text-blue-600 font-semibold">R$ 19,90/mês</p>
                 <p class="text-sm text-gray-500 mb-4">Para quem quer mais controle</p>
-
                 <ul class="text-sm space-y-2 mb-6 text-left">
                     <li class="flex items-center gap-2">
                         <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
@@ -159,13 +167,11 @@
                         Suporte por email
                     </li>
                 </ul>
-
                 <button class="mt-auto bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
                     Escolher Pro
                 </button>
             </div>
 
-            <!-- Premium -->
             <div class="border-2 border-purple-400 rounded-lg p-6 flex flex-col relative text-center">
                 <span class="absolute -top-3 right-4 bg-purple-500 text-white text-xs px-3 py-1 rounded-full">Plano
                     Atual</span>
@@ -173,7 +179,6 @@
                 <h3 class="text-lg font-bold">Premium</h3>
                 <p class="text-blue-600 font-semibold">R$ 39,90/mês</p>
                 <p class="text-sm text-gray-500 mb-4">Máximo controle + Família Smart</p>
-
                 <ul class="text-sm space-y-2 mb-6 text-left">
                     <li class="flex items-center gap-2">
                         <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
@@ -204,131 +209,125 @@
                         Suporte por email
                     </li>
                 </ul>
-
                 <button class="mt-auto bg-purple-300 text-white py-2 rounded-md cursor-not-allowed">
                     Plano Atual
                 </button>
             </div>
         </div>
     </div>
-    <div class="space-y-6">
 
-        <!-- Segurança -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-lg font-semibold flex items-center gap-2">
-                <i data-lucide="shield" class="w-5 h-5 text-gray-700"></i>
-                Segurança
-            </h2>
-            <p class="text-sm text-gray-500 mb-4">Altere sua senha de acesso</p>
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+            <i data-lucide="shield" class="w-5 h-5 text-gray-700"></i>
+            Segurança
+        </h2>
+        <p class="text-sm text-gray-500 mb-4">Altere sua senha de acesso</p>
 
-            <form class="space-y-4">
+        <form class="space-y-4">
+            <div>
+                <label class="text-sm font-medium">Senha atual</label>
+                <input type="password" class="w-full p-2 border rounded-md">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="text-sm font-medium">Senha atual</label>
+                    <label class="text-sm font-medium">Nova senha</label>
                     <input type="password" class="w-full p-2 border rounded-md">
                 </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-sm font-medium">Nova senha</label>
-                        <input type="password" class="w-full p-2 border rounded-md">
-                    </div>
-                    <div>
-                        <label class="text-sm font-medium">Confirmar nova senha</label>
-                        <input type="password" class="w-full p-2 border rounded-md">
-                    </div>
-                </div>
-
-                <button type="submit"
-                    class="px-4 py-2 bg-[#0f172a] text-white rounded-md flex items-center gap-2 hover:bg-[#1e293b]">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i> Alterar Senha
-                </button>
-            </form>
-        </div>
-
-        <!-- Notificações -->
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-lg font-semibold flex items-center gap-2">
-                <i data-lucide="bell" class="w-5 h-5 text-gray-700"></i>
-                Notificações
-            </h2>
-            <p class="text-sm text-gray-500 mb-4">Configure suas preferências de notificação</p>
-
-            <div class="space-y-3">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-medium">Notificações por Email</p>
-                        <p class="text-sm text-gray-500">Receba atualizações por email</p>
-                    </div>
-                    <span class="px-3 py-1 rounded-md bg-[#0f172a] text-white text-sm">Ativo</span>
-                </div>
-
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-medium">Notificações Push</p>
-                        <p class="text-sm text-gray-500">Notificações no navegador</p>
-                    </div>
-                    <span class="px-3 py-1 rounded-md border border-gray-300 text-sm text-gray-700">Inativo</span>
-                </div>
-
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-medium">Alertas de Gastos</p>
-                        <p class="text-sm text-gray-500">Avisos sobre gastos excessivos</p>
-                    </div>
-                    <span class="px-3 py-1 rounded-md bg-[#0f172a] text-white text-sm">Ativo</span>
-                </div>
-
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="font-medium">Progresso de Metas</p>
-                        <p class="text-sm text-gray-500">Atualizações sobre suas metas</p>
-                    </div>
-                    <span class="px-3 py-1 rounded-md bg-[#0f172a] text-white text-sm">Ativo</span>
+                <div>
+                    <label class="text-sm font-medium">Confirmar nova senha</label>
+                    <input type="password" class="w-full p-2 border rounded-md">
                 </div>
             </div>
-        </div>
 
-
-        <!-- Dados e Privacidade -->
-        <div class="bg-white p-6 rounded-lg space-y-6">
-            <div>
-                <h2 class="text-lg font-semibold flex items-center gap-2">
-                    <i data-lucide="lock" class="w-5 h-5 text-gray-700"></i>
-                    Dados e Privacidade
-                </h2>
-                <p class="text-sm text-gray-500 mt-1">Gerencie seus dados pessoais</p>
-            </div>
-
-            <!-- Exportar Dados -->
-            <div class="flex justify-between items-center p-4 rounded-md">
-                <div class="flex flex-col justify-center">
-                    <p class="font-medium">Exportar Dados</p>
-                    <p class="text-sm text-gray-500">Baixe uma cópia dos seus dados</p>
-                </div>
-                <button
-                    class="px-4 py-2 bg-white text-black border border-[#3f9fafb] rounded-md flex items-center gap-2 hover:bg-[#ef9fafb]">
-                    <i data-lucide="download" class="w-5 h-5"></i> Exportar
-                </button>
-            </div>
-
-            <!-- Excluir Conta -->
-            <div class="flex justify-between items-center p-4 rounded-md">
-                <div class="flex flex-col justify-center">
-                    <p class="font-medium text-red-700">Excluir Conta</p>
-                    <p class="text-sm text-gray-500">Remover permanentemente sua conta</p>
-                </div>
-                <button
-                    class="px-4 py-2 bg-red-600 text-white border border-red-700 rounded-md flex items-center gap-2 hover:bg-red-700">
-                    <i data-lucide="trash-2" class="w-5 h-5"></i> Excluir Conta
-                </button>
-            </div>
-        </div>
-
-
-
+            <button type="submit"
+                class="px-4 py-2 bg-[#0f172a] text-white rounded-md flex items-center gap-2 hover:bg-[#1e293b]">
+                <i data-lucide="shield-check" class="w-5 h-5"></i> Alterar Senha
+            </button>
+        </form>
     </div>
-    <!-- Ativar Lucide -->
-    <script>
-        lucide.createIcons();
-    </script>
-    {% endblock %}
+
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+            <i data-lucide="bell" class="w-5 h-5 text-gray-700"></i>
+            Notificações
+        </h2>
+        <p class="text-sm text-gray-500 mb-4">Configure suas preferências de notificação</p>
+        <div class="space-y-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Notificações por Email</p>
+                    <p class="text-sm text-gray-500">Receba atualizações por email</p>
+                </div>
+                <span class="px-3 py-1 rounded-md bg-[#0f172a] text-white text-sm">Ativo</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Notificações Push</p>
+                    <p class="text-sm text-gray-500">Notificações no navegador</p>
+                </div>
+                <span class="px-3 py-1 rounded-md border border-gray-300 text-sm text-gray-700">Inativo</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Alertas de Gastos</p>
+                    <p class="text-sm text-gray-500">Avisos sobre gastos excessivos</p>
+                </div>
+                <span class="px-3 py-1 rounded-md bg-[#0f172a] text-white text-sm">Ativo</span>
+            </div>
+            <div class="flex justify-between items-center">
+                <div>
+                    <p class="font-medium">Progresso de Metas</p>
+                    <p class="text-sm text-gray-500">Atualizações sobre suas metas</p>
+                </div>
+                <span class="px-3 py-1 rounded-md bg-[#0f172a] text-white text-sm">Ativo</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg space-y-6">
+        <div>
+            <h2 class="text-lg font-semibold flex items-center gap-2">
+                <i data-lucide="lock" class="w-5 h-5 text-gray-700"></i>
+                Dados e Privacidade
+            </h2>
+            <p class="text-sm text-gray-500 mt-1">Gerencie seus dados pessoais</p>
+        </div>
+
+        <div class="flex justify-between items-center p-4 rounded-md">
+            <div class="flex flex-col justify-center">
+                <p class="font-medium">Exportar Dados</p>
+                <p class="text-sm text-gray-500">Baixe uma cópia dos seus dados</p>
+            </div>
+            <div class="flex justify-between items-center p-4 rounded-md">
+                <form action="{% url 'financas:exportar_dados' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="px-4 py-2 bg-white text-black border border-gray-300 rounded-md flex items-center gap-2 hover:bg-gray-100">
+                        <i data-lucide="download" class="w-5 h-5"></i> Exportar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center p-4 rounded-md">
+            <div class="flex flex-col justify-center">
+                <p class="font-medium text-red-700">Excluir Conta</p>
+                <p class="text-sm text-gray-500">Remover permanentemente sua conta</p>
+            </div>
+            <button
+                class="px-4 py-2 bg-red-600 text-white border border-red-700 rounded-md flex items-center gap-2 hover:bg-red-700">
+                <i data-lucide="trash-2" class="w-5 h-5"></i> Excluir Conta
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+</div>
+<!-- Ativar Lucide -->
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

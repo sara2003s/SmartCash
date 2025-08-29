@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from .models import Profile
 
 class LoginForm(forms.Form):
     username = forms.CharField(
@@ -12,16 +13,20 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
 
-class PerfilForm(forms.ModelForm):
+class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'email']
+        fields = ['first_name', 'last_name', 'email']
         labels = {
-            'first_name': 'Nome completo',
-            'email': 'Email',
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'email': 'E-mail',
         }
         widgets = {
             'first_name': forms.TextInput(attrs={
+                'class': 'w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 outline-none'
+            }),
+            'last_name': forms.TextInput(attrs={
                 'class': 'w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 outline-none'
             }),
             'email': forms.EmailInput(attrs={
@@ -29,6 +34,22 @@ class PerfilForm(forms.ModelForm):
             }),
         }
 
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['cpf_rg', 'celular']
+        labels = {
+            'cpf_rg': 'CPF/RG',
+            'celular': 'Celular',
+        }
+        widgets = {
+            'cpf_rg': forms.TextInput(attrs={
+                'class': 'w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 outline-none'
+            }),
+            'celular': forms.TextInput(attrs={
+                'class': 'w-full border rounded-md px-3 py-2 focus:ring focus:ring-blue-200 outline-none'
+            }),
+        }
 
 class SuporteForm(forms.Form):
     assunto = forms.CharField(
@@ -45,5 +66,3 @@ class SuporteForm(forms.Form):
             'placeholder': 'Descreva sua dúvida ou sugestão...'
         })
     )
-
-

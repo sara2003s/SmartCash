@@ -7,13 +7,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from decimal import Decimal
 from django.db.models.functions import TruncMonth
-from .forms import PerfilForm, SuporteForm
 from .models import ContaBancaria
 import re
 from .models import CartaoDeCredito
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.utils import timezone
 from django.db.models.functions import TruncMonth
+from .forms import UserForm, ProfileForm, SuporteForm
+from django.http import StreamingHttpResponse
+import csv
+import io 
 
 def login_view(request):
     if request.method == 'POST':
@@ -119,6 +122,7 @@ def dashboard(request):
         meta_total = meta.valor_alvo if meta else Decimal('0.00')
         meta_progresso = (meta_valor / meta_total) * 100 if meta_total > 0 else 0
 
+        # Dados para o gráfico de pizza
         gastos_por_categoria = Transacao.objects.filter(
             usuario=request.user,
             tipo='saida'
@@ -141,11 +145,12 @@ def dashboard(request):
         expenses_labels = [g['nome'] for g in gastos_detalhados]
         expenses_data = [g['valor'] for g in gastos_detalhados]
 
-        meses_labels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago',]
+        # Dados para o gráfico de barras (EVOLUÇÃO FINANCEIRA)
         hoje = timezone.now()
-        mes_atual = hoje.month
-        meses_ordenados = [meses_labels[(mes_atual - 6 + i) % 12] for i in range(6)]
-        
+        meses_pt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        meses_labels_numeros = [(hoje - timezone.timedelta(days=30*i)).month for i in range(5, -1, -1)]
+        meses_labels = [meses_pt[m - 1] for m in meses_labels_numeros]
+
         receitas_mensais = [
             Transacao.objects.filter(
                 usuario=request.user,
@@ -164,6 +169,46 @@ def dashboard(request):
             ).aggregate(Sum('valor'))['valor__sum'] or 0 for i in range(5, -1, -1)
         ]
 
+        # Lógica para as Recomendações Inteligentes
+        recomendacoes = []
+
+        # 1. Alerta de gastos excessivos em uma categoria
+        if gastos_detalhados:
+            top_gasto = max(gastos_detalhados, key=lambda x: x['porcentagem'])
+            if top_gasto['porcentagem'] > 30: # Limite para considerar um gasto excessivo
+                recomendacoes.append({
+                    'tipo': 'atencao',
+                    'titulo': 'Atenção:',
+                    'texto': f"Seus gastos com {top_gasto['nome']} representam {top_gasto['porcentagem']:.0f}% das despesas."
+                })
+        
+        # 2. Potencial de investimento
+        if saldo > 1000: # Valor arbitrário para começar a sugerir investimento
+            ganho_anual = (saldo * Decimal('0.11')) # Exemplo de rendimento de 11% ao ano
+            recomendacoes.append({
+                'tipo': 'potencial',
+                'titulo': 'Potencial de investimento identificado:',
+                'texto': f"Com R$ {saldo:.2f} disponíveis, você pode investir em CDB e obter R$ {ganho_anual:.2f} anuais."
+            })
+
+        # 3. Reserva de emergência
+        media_gastos_mensais = sum(gastos_mensais) / len(gastos_mensais) if len(gastos_mensais) > 0 else 0
+        reserva_recomendada = media_gastos_mensais * 6
+        if saldo < reserva_recomendada:
+            recomendacoes.append({
+                'tipo': 'reserva',
+                'titulo': 'Construa sua reserva de emergência:',
+                'texto': f"Seu saldo atual é de R$ {saldo:.2f}. A reserva ideal é de R$ {reserva_recomendada:.2f}."
+            })
+
+        # 4. Oportunidade de economia em gastos variáveis
+        if 'Lazer' in [g['nome'] for g in gastos_detalhados] and 'Lazer' != top_gasto['nome']:
+             recomendacoes.append({
+                'tipo': 'oportunidade',
+                'titulo': 'Oportunidade de economia em gastos variáveis:',
+                'texto': f"Seus gastos de lazer podem ser reduzidos para aumentar a sua poupança."
+            })
+
         transacoes_recentes = Transacao.objects.filter(usuario=request.user).order_by('-data')[:6]
 
     except Exception as e:
@@ -181,6 +226,7 @@ def dashboard(request):
         meses_labels = ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago']
         receitas_mensais = [0, 0, 0, 0, 0, 0]
         gastos_mensais = [0, 0, 0, 0, 0, 0]
+        recomendacoes = []
 
 
     context = {
@@ -197,6 +243,7 @@ def dashboard(request):
         'meses_labels': meses_labels,
         'receitas_mensais': receitas_mensais,
         'gastos_mensais': gastos_mensais,
+        'recomendacoes': recomendacoes,
     }
 
     return render(request, "financas/dashboard.html", context)
@@ -422,29 +469,45 @@ def educacao_2(request):
         "sem_header": True
     })
 
+@login_required
 def configuracoes(request):
-    if request.method == "POST":
-        if "perfil_form" in request.POST:
-            perfil_form = PerfilForm(request.POST, instance=request.user)
-            if perfil_form.is_valid():
-                perfil_form.save()
-        elif "suporte_form" in request.POST:
+    user = request.user
+    user_profile, created = Profile.objects.get_or_create(user=user)
+    
+    user_form = UserForm(instance=user)
+    profile_form = ProfileForm(instance=user_profile)
+    suporte_form = SuporteForm()
+
+    if request.method == 'POST':
+        if 'perfil_submit' in request.POST:
+            user_form = UserForm(request.POST, instance=user)
+            profile_form = ProfileForm(request.POST, instance=user_profile)
+            
+            if user_form.is_valid() and profile_form.is_valid():
+                user_form.save()
+                profile_form.save()
+                messages.success(request, 'Informações de perfil atualizadas com sucesso!')
+                return redirect('financas:configuracoes')
+            else:
+                messages.error(request, 'Ocorreu um erro ao atualizar as informações. Verifique os dados.')
+
+        elif 'suporte_submit' in request.POST:
             suporte_form = SuporteForm(request.POST)
             if suporte_form.is_valid():
-                # Aqui você pode enviar um email ou salvar no banco
                 print("Assunto:", suporte_form.cleaned_data['assunto'])
                 print("Mensagem:", suporte_form.cleaned_data['mensagem'])
-                # redirect para evitar reenvio do form
-                return redirect("configuracoes")
-    else:
-        perfil_form = PerfilForm(instance=request.user)
-        suporte_form = SuporteForm()
-
-    return render(request, "financas/configuracoes.html", {
-        "perfil_form": perfil_form,
-        "suporte_form": suporte_form,
-        "sem_header": True,
-    })
+                messages.success(request, 'Sua mensagem de suporte foi enviada!')
+                return redirect('financas:configuracoes')
+            else:
+                messages.error(request, 'Ocorreu um erro ao enviar a mensagem de suporte.')
+    
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'suporte_form': suporte_form,
+        'sem_header': True,
+    }
+    return render(request, 'financas/configuracoes.html', context)
 
 def inicio(request):
     planos = [
@@ -604,3 +667,33 @@ def educacao(request):
 
     return render(request, "financas/educacao.html", context)
 
+@login_required
+def exportar_dados(request):
+    transacoes_do_usuario = Transacao.objects.filter(usuario=request.user).order_by('-data')
+
+    def generate_csv():
+        # Cria um buffer de string na memória para escrever o CSV
+        pseudo_buffer = io.StringIO()
+        writer = csv.writer(pseudo_buffer)
+
+        # Escreva o cabeçalho
+        yield writer.writerow(['Nome', 'Valor', 'Tipo', 'Data', 'Categoria'])
+        
+        # Escreva cada transação
+        for transacao in transacoes_do_usuario:
+            yield writer.writerow([
+                transacao.nome,
+                transacao.valor,
+                transacao.tipo,
+                transacao.data.strftime('%Y-%m-%d'),
+                transacao.categoria.nome if transacao.categoria else 'N/A'
+            ])
+
+        # A sua função deve retornar um iterador
+        
+    response = StreamingHttpResponse(
+        generate_csv(),
+        content_type='text/csv',
+        headers={'Content-Disposition': 'attachment; filename="dados_smartcash.csv"'},
+    )
+    return response

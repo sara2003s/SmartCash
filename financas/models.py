@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 from decimal import Decimal
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils import timezone
 
 class Categoria(models.Model):
 	nome = models.CharField(max_length=100)
@@ -9,19 +12,22 @@ class Categoria(models.Model):
 		return self.nome
 
 class Transacao(models.Model):
-	TIPOS = (
-		("entrada", "Entrada"),
-		("saida", "Saida"),
-	)
-	usuario = models.ForeignKey(User, on_delete=models.CASCADE) 
-	valor = models.DecimalField(max_digits=10, decimal_places=2)
-	tipo = models.CharField(max_length=10, choices=TIPOS)
-	categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
-	data = models.DateField()
+    TIPOS = (
+        ("entrada", "Entrada"),
+        ("saida", "Saida"),
+    )
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    # Adicione este campo
+    nome = models.CharField(max_length=255) 
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    tipo = models.CharField(max_length=10, choices=TIPOS)
+    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)
+    # Adicione um valor padrão para a data
+    data = models.DateField(default=timezone.now) 
 
-
-	def __str__(self):
-		return f"{self.tipo} - {self.valor} em {self.data}"
+    def __str__(self):
+        # A representação do objeto agora usa o nome
+        return f"{self.nome} - R$ {self.valor}"
 	
 class Meta(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -57,11 +63,21 @@ def __str__(self):
 class Profile(models.Model):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    plano = models.CharField(max_length=50, default='freemium')
     cpf_rg = models.CharField(max_length=20, blank=True)
     celular = models.CharField(max_length=15, blank=True)
 
     def __str__(self):
         return self.user.username
+    
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
     
 class ContaBancaria(models.Model):
 
