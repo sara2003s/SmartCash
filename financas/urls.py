@@ -23,7 +23,7 @@ urlpatterns = [
     path('metas/criar/', views.criar_meta, name='criar_meta'),
     path('metas/excluir/<int:meta_id>/', views.excluir_meta, name='excluir_meta'),
     path('metas/adicionar-dinheiro/<int:meta_id>/', views.adicionar_dinheiro, name='adicionar_dinheiro'),
-    path('configuracoes/exportar-dados/', views.exportar_dados, name='exportar_dados')
-
+    path('configuracoes/exportar-dados/', views.exportar_dados, name='exportar_dados'),
+    path('aulas/', views.pagina_aulas, name='aulas'),
 ]
 

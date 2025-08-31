@@ -7,16 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from decimal import Decimal
 from django.db.models.functions import TruncMonth
-from .models import ContaBancaria
-import re
-from .models import CartaoDeCredito
-from django.db.models.functions import ExtractMonth, ExtractYear
+from .models import ContaBancaria, CartaoDeCredito
+import re, csv, io
 from django.utils import timezone
 from django.db.models.functions import TruncMonth
 from .forms import UserForm, ProfileForm, SuporteForm
 from django.http import StreamingHttpResponse
-import csv
-import io 
+from .models import Aula
+from dateutil.relativedelta import relativedelta
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -148,26 +147,30 @@ def dashboard(request):
         # Dados para o gráfico de barras (EVOLUÇÃO FINANCEIRA)
         hoje = timezone.now()
         meses_pt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
-        meses_labels_numeros = [(hoje - timezone.timedelta(days=30*i)).month for i in range(5, -1, -1)]
-        meses_labels = [meses_pt[m - 1] for m in meses_labels_numeros]
+        
+        meses_labels = []
+        receitas_mensais = []
+        gastos_mensais = []
 
-        receitas_mensais = [
-            Transacao.objects.filter(
+        for i in range(6):
+            data_mes = hoje - relativedelta(months=i)
+            meses_labels.insert(0, meses_pt[data_mes.month - 1])
+
+            receita = Transacao.objects.filter(
                 usuario=request.user,
                 tipo='entrada',
-                data__year=(hoje - timezone.timedelta(days=30*i)).year,
-                data__month=(hoje - timezone.timedelta(days=30*i)).month
-            ).aggregate(Sum('valor'))['valor__sum'] or 0 for i in range(5, -1, -1)
-        ]
+                data__year=data_mes.year,
+                data__month=data_mes.month
+            ).aggregate(Sum('valor'))['valor__sum'] or 0
+            receitas_mensais.insert(0, receita)
 
-        gastos_mensais = [
-            Transacao.objects.filter(
+            gasto = Transacao.objects.filter(
                 usuario=request.user,
                 tipo='saida',
-                data__year=(hoje - timezone.timedelta(days=30*i)).year,
-                data__month=(hoje - timezone.timedelta(days=30*i)).month
-            ).aggregate(Sum('valor'))['valor__sum'] or 0 for i in range(5, -1, -1)
-        ]
+                data__year=data_mes.year,
+                data__month=data_mes.month
+            ).aggregate(Sum('valor'))['valor__sum'] or 0
+            gastos_mensais.insert(0, gasto)
 
         # Lógica para as Recomendações Inteligentes
         recomendacoes = []
@@ -203,7 +206,7 @@ def dashboard(request):
 
         # 4. Oportunidade de economia em gastos variáveis
         if 'Lazer' in [g['nome'] for g in gastos_detalhados] and 'Lazer' != top_gasto['nome']:
-             recomendacoes.append({
+            recomendacoes.append({
                 'tipo': 'oportunidade',
                 'titulo': 'Oportunidade de economia em gastos variáveis:',
                 'texto': f"Seus gastos de lazer podem ser reduzidos para aumentar a sua poupança."
@@ -223,7 +226,7 @@ def dashboard(request):
         expenses_data = []
         gastos_detalhados = []
         transacoes_recentes = []
-        meses_labels = ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago']
+        meses_labels = ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
         receitas_mensais = [0, 0, 0, 0, 0, 0]
         gastos_mensais = [0, 0, 0, 0, 0, 0]
         recomendacoes = []
@@ -316,6 +319,13 @@ def categorias(request):
 @login_required
 def metas_view(request):
     return render(request, "financas/metas.html")
+
+def pagina_aulas(request):
+    aulas = Aula.objects.all()
+    contexto = {
+        'aulas': aulas
+    }
+    return render(request, 'financas/aulas.html', contexto)
 
 @login_required
 def criar_meta(request):

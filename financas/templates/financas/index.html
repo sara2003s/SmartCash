@@ -9,11 +9,22 @@
     <title>SmartCash - Controle Financeiro inteligente</title>
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .message-toast {
+            animation: fadeInOut 5s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 scroll-smooth">
 
-    <!-- Header -->
     <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div class="container mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-2">
@@ -22,27 +33,22 @@
                     class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">SmartCash</span>
             </div>
             <nav class="hidden md:flex items-center space-x-6">
-                <a href="features" class="text-gray-600 hover:text-blue-600 transition-colors">Funcionalidades</a>
-                <a href="plans" class="text-gray-600 hover:text-blue-600 transition-colors">Planos</a>
+                <a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">Funcionalidades</a>
+                <a href="#plans" class="text-gray-600 hover:text-blue-600 transition-colors">Planos</a>
                 <a href="educacao" class="text-gray-600 hover:text-blue-600 transition-colors">Educação</a>
 
-                <!-- Botão Entrar (abre modal) -->
                 <button onclick="abrirModal()" class="text-gray-600 hover:text-blue-600 transition-colors">
                     Entrar
                 </button>
 
-                <!-- Botão CTA -->
                 <a href="javascript:void(0)" onclick="abrirRegister()"
                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-green-600 text-white rounded shadow hover:opacity-90 transition">
                     Começar Grátis
                 </a>
-
-
             </nav>
         </div>
     </header>
 
-    <!-- Hero -->
     <section class="container mx-auto px-4 py-20 text-center">
         <h2 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
             Controle financeiro <span
@@ -61,7 +67,6 @@
         <p class="text-sm text-gray-500 mt-4">✓ Sem cartão de crédito necessário ✓ Configure em 2 minutos</p>
     </section>
 
-    <!-- Features Section -->
     <section id="features" class="bg-white py-20">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -117,7 +122,6 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
     <section id="plans" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
         <div class="container mx-auto px-4">
             <div class="text-center mb-16">
@@ -161,7 +165,6 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
     <section id="cta" class="bg-gradient-to-r from-blue-600 to-green-600 py-20">
         <div class="container mx-auto px-4 text-center">
             <h3 class="text-4xl font-bold text-white mb-4">Pronto para transformar suas finanças?</h3>
@@ -176,7 +179,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8">
@@ -184,7 +186,7 @@
                     <div class="flex items-center space-x-2 mb-4">
                         <i data-lucide="piggy-bank" class="w-5 h-5 text-blue-400"></i>
                         <span
-                    class="text-1xl font-bold">SmartCash</span>
+                            class="text-1xl font-bold">SmartCash</span>
                     </div>
                     <p class="text-gray-400">Controle financeiro inteligente para sua vida corrida.</p>
                 </div>
@@ -231,7 +233,6 @@
         </div>
     </footer>
 
-    <!-- Modal Login -->
     <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50"
         onclick="fecharFora(event)">
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md relative" onclick="event.stopPropagation();">
@@ -275,7 +276,6 @@
                     Usuário
                 </button>
             </div>
-            <!-- Formulário por Email -->
             <form id="form-email" method="post" action="{% url 'login' %}" class="space-y-4">
                 {% csrf_token %}
 
@@ -297,7 +297,6 @@
                 </button>
             </form>
 
-            <!-- Formulário por Usuário -->
             <form id="form-usuario" method="post" action="{% url 'login' %}" class="space-y-4 hidden">
                 {% csrf_token %}
 
@@ -319,7 +318,6 @@
                 </button>
             </form>
 
-            <!-- Link para login -->
             <p class="text-sm text-center mt-4">
                 Não tem uma conta?
                 <a href="#" onclick="fecharModal(); abrirRegister();" class="text-blue-600 hover:underline">
@@ -328,15 +326,12 @@
             </p>
         </div>
     </div>
-    <!-- MODAL CADASTRO-->
     <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md relative" onclick="event.stopPropagation();">
-            <!-- Botão fechar -->
             <button onclick="fecharRegister()"
                 class="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
 
-            <!-- Logo -->
             <div class="flex items-center justify-center mb-4">
                 <img src="{% static 'img/piggy-bank.png' %}" alt="Logo SmartCash" class="h-8 w-8 mr-2">
                 <h1 class="text-2xl font-bold">
@@ -347,7 +342,6 @@
             <h2 class="text-xl font-bold w-full mb-2">Criar Conta</h2>
             <p class="w-full text-sm mb-4">Crie sua conta gratuita e comece a organizar suas finanças</p>
 
-            <!-- Formulário Cadastro -->
             <form method="post" action="{% url 'financas:register' %}">
                 {% csrf_token %}
                 <input type="text" name="nome_completo" placeholder="Nome completo"
@@ -398,20 +392,18 @@
                     Conta</button>
             </form>
 
-            <!-- Link para login -->
             <p class="text-sm text-center mt-4">
                 Já tem uma conta?
                 <a href="#" onclick="fecharRegister(); abrirModal();" class="text-blue-600 hover:underline">
                     Fazer login
                 </a>
             </p>
-
         </div>
     </div>
 
 
     <script>
-          // Ativa os ícones do Lucide
+        // Ativa os ícones do Lucide
         lucide.createIcons();
 
         function mostrarTab(tab) {

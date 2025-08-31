@@ -5,6 +5,17 @@
 {% block title %}Dashboard - SmartCash{% endblock %}
 
 {% block content %}
+{% if messages %}
+<div id="messageContainer" class="fixed bottom-4 right-4 z-50">
+    {% for message in messages %}
+    <div
+        class="px-6 py-4 rounded-lg shadow-lg text-white font-semibold transition-all duration-300
+                {% if 'error' in message.tags %}bg-red-600{% elif 'success' in message.tags %}bg-green-600{% else %}bg-gray-600{% endif %}">
+        <p>{{ message }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 <div class="p-1">
 
     <h1 class="text-3xl font-bold mb-2">Olá, {{ user.first_name|default:user.username }}! 👋</h1>
@@ -296,5 +307,14 @@
             }
         });
     }
+    document.addEventListener("DOMContentLoaded", function () {
+        const messageContainer = document.getElementById('messageContainer');
+        if (messageContainer) {
+            setTimeout(function() {
+                messageContainer.style.display = 'none';
+            }, 5000); // 5000 milissegundos = 5 segundos
+        }
+    });
+
 </script>
 {% endblock %}

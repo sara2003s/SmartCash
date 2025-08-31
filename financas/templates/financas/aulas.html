@@ -1,0 +1,118 @@
+{% load static %}
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <title>Aulas de Educação Financeira</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="page-header">
+        <div class="left-section">
+            <a href="{% url 'financas:educacao' %}" class="back-button">
+                <i data-lucide="arrow-left" class="w-10 h-10"></i>
+            </a>
+            <div>
+                <h1>Aulas de Educação Financeira</h1>
+                <p class="subtitle">{{ aulas.count }} aulas básicas • Aprenda no seu ritmo</p>
+            </div>
+        </div>
+        <a href="#" class="upgrade-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                class="bi bi-arrow-up-right-square-fill" viewBox="0 0 16 16">
+                <path
+                    d="M14 0a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12zM5.904 10.813L10 6.717v3.134a.5.5 0 0 0 1 0V5.5a.5.5 0 0 0-.5-.5H6.5a.5.5 0 0 0 0 1h3.134l-4.096 4.096a.5.5 0 0 0 .707.707z" />
+            </svg>
+            Upgrade Pro para mais aulas
+        </a>
+    </div>
+    <div class="container">
+        {% for aula in aulas %}
+        <div class="aula-card">
+            <div class="aula-card-header">
+                <div class="aula-card-title-section">
+                    <div class="aula-icon" id="icon-{{ aula.id }}">
+                        <i data-lucide="book-open" class="w-5 h-5" id="book-icon-{{ aula.id }}"></i>
+                        <i data-lucide="check-circle" class="w-5 h-5" id="check-icon-{{ aula.id }}"
+                            style="display: none; color: #4CAF50;"></i>
+                    </div>
+
+                    <div class="aula-info">
+                        <h2>{{ aula.titulo }}</h2>
+                        <p>{{ aula.descricao }}</p>
+                    </div>
+                </div>
+                <div class="aula-buttons">
+                    {% if aula.pdf_url %}
+                    <a href="{{ aula.pdf_url }}" class="aula-button pdf" download>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                            <path
+                                d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293V6.5z" />
+                            <path
+                                d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z" />
+                        </svg>
+                        PDF
+                    </a>
+                    {% endif %}
+                    <a href="#" class="aula-button study-button" id="study-{{ aula.id }}">
+                        <i data-lucide="play" class="w-5 h-5"></i>
+                        Estudar
+                    </a>
+                    <a href="#" class="aula-button completed-button" id="completed-{{ aula.id }}"
+                        style="display: none;">
+                        <i data-lucide="circle-check-big" class="w-5 h-5"></i>
+                        Concluída
+                    </a>
+                </div>
+            </div>
+            <p class="aula-duration">{{ aula.duracao_minutos }} min</p>
+
+            <div class="partes-container">
+                {% for parte in aula.partes.all %}
+                <div class="parte-aula">
+                    <h3>Parte {{ forloop.counter }}: {{ parte.titulo }}</h3>
+                    <p>{{ parte.descricao }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>
+
+<script>
+    lucide.createIcons();
+    document.addEventListener('DOMContentLoaded', function () {
+        const studyButtons = document.querySelectorAll('.study-button');
+
+        studyButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const cardId = button.id.replace('study-', '');
+                const completedButton = document.getElementById(`completed-${cardId}`);
+                const bookIcon = document.getElementById(`book-icon-${cardId}`);
+                const checkIcon = document.getElementById(`check-icon-${cardId}`);
+
+                // Esconde o botão "Estudar"
+                button.style.display = 'none';
+
+                // Mostra o botão "Concluída"
+                completedButton.style.display = 'flex';
+
+                // Esconde o ícone de livro
+                bookIcon.style.display = 'none';
+
+                // Mostra o ícone de check
+                checkIcon.style.display = 'block';
+            });
+        });
+    });
+</script>

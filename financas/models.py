@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.text import slugify
 
 class Categoria(models.Model):
 	nome = models.CharField(max_length=100)
@@ -100,3 +101,21 @@ class CartaoDeCredito(models.Model):
 
     def __str__(self):
         return f"{self.nome_cartao} - **** {self.numero_cartao[-4:]}"
+    
+
+class Aula(models.Model):
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField()
+    duracao_minutos = models.IntegerField(default=0)
+    pdf_url = models.URLField(blank=True, null=True) # Para o link do PDF
+
+    def __str__(self):
+        return self.titulo
+
+class ParteAula(models.Model):
+    aula = models.ForeignKey(Aula, related_name='partes', on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField()
+
+    def __str__(self):
+        return f"{self.aula.titulo} - {self.titulo}"

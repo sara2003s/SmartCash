@@ -128,3 +128,228 @@ select option:checked {
     background-color: #dbe9f2; /* Cor azul mais escuro (tailwind blue-50) */
     color: #ffffff; /* Cor do texto */
 }
+body {
+    background-color: #f5f7fa;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3px;
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 170px; 
+    background-color: #ffffff;
+    border-radius: 0; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 25px;
+
+}
+
+.page-header .left-section {
+    display: flex;
+    align-items: center;
+}
+
+.page-header .back-button {
+    text-decoration: none;
+    color: #000000;
+    font-weight: 600;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.page-header .back-button svg {
+    margin-right: 5px;
+}
+
+.page-header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+}
+
+.page-header .subtitle {
+    font-size: 0.9rem;
+    color: #777;
+    margin-top: 1px;
+}
+
+.page-header .upgrade-button {
+    background-color: #f0e6fa;
+    color: #6a1b9a;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.page-header .upgrade-button:hover {
+    background-color: #e2d2f1;
+}
+
+.page-header .upgrade-button svg {
+    margin-right: 5px;
+}
+
+.aula-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 25px 30px;
+    margin-bottom: 25px;
+}
+
+.aula-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.aula-card-title-section {
+    display: flex;
+    align-items: center;
+}
+
+.aula-icon {
+    background-color: #dbe9f2;
+    border-radius: 8px;
+    padding: 10px;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.aula-icon svg {
+    width: 24px;
+    height: 24px;
+    color: #267eb5;
+}
+
+.aula-info h2 {
+    font-size: 1.35rem;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.aula-info p {
+    font-size: 0.85rem;
+    color: #777;
+    margin: 0;
+}
+
+.aula-duration {
+    font-size: 0.85rem;
+    color: #777;
+    margin-top: 5px;
+    margin-left: 0;
+}
+
+.aula-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.aula-button {
+    padding: 9px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.aula-button.pdf {
+    background-color: #ffffff;
+    color: #272e3f;
+    border: 1px solid #e0e0e0;
+}
+
+.aula-button.pdf:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+}
+
+.aula-button.study-button {
+    background-color: #272e3f !important; /* Fundo roxo */
+    color: #ffffff !important; /* Texto branco */
+    border: none !important; /* Sem borda */
+}
+
+.aula-button.study:hover {
+    background-color: #272e3f;
+}
+
+.aula-button svg {
+    margin-right: 7px;
+}
+
+.aula-button.completed-button {
+    background-color: #e0e0e0;
+    color: #666;
+    cursor: default; 
+}
+
+.aula-card .aula-card-title-section .aula-icon.completed {
+    background-color: #76d176;
+}
+
+.partes-container {
+    margin-top: 20px;
+}
+
+.parte-aula {
+    border-left: 3px solid #e0e0e0;
+    padding-left: 20px;
+    margin-top: 15px;
+    position: relative;
+}
+
+.parte-aula h3 {
+    font-size: 1rem;
+    color: #1e3a8a;
+    margin: 0 0 5px 0;
+    font-weight: 600;
+}
+
+.parte-aula p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0;
+}
+
+.parte-aula::before {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    background-color: #dbe9f2;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+
+.aula-card .partes-container .parte-aula:first-child h3 {
+    margin-top: 0;
+}
