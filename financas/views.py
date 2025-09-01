@@ -111,7 +111,6 @@ def metas(request):
 @login_required
 def dashboard(request):
     try:
-        # Dados para os cards
         entradas = Transacao.objects.filter(usuario=request.user, tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or Decimal('0.00')
         saidas = Transacao.objects.filter(usuario=request.user, tipo='saida').aggregate(Sum('valor'))['valor__sum'] or Decimal('0.00')
         saldo = entradas - saidas
@@ -121,7 +120,6 @@ def dashboard(request):
         meta_total = meta.valor_alvo if meta else Decimal('0.00')
         meta_progresso = (meta_valor / meta_total) * 100 if meta_total > 0 else 0
 
-        # Dados para o gráfico de pizza
         gastos_por_categoria = Transacao.objects.filter(
             usuario=request.user,
             tipo='saida'
@@ -144,9 +142,8 @@ def dashboard(request):
         expenses_labels = [g['nome'] for g in gastos_detalhados]
         expenses_data = [g['valor'] for g in gastos_detalhados]
 
-        # Dados para o gráfico de barras (EVOLUÇÃO FINANCEIRA)
         hoje = timezone.now()
-        meses_pt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        meses_pt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set']
         
         meses_labels = []
         receitas_mensais = []
@@ -172,10 +169,8 @@ def dashboard(request):
             ).aggregate(Sum('valor'))['valor__sum'] or 0
             gastos_mensais.insert(0, gasto)
 
-        # Lógica para as Recomendações Inteligentes
         recomendacoes = []
 
-        # 1. Alerta de gastos excessivos em uma categoria
         if gastos_detalhados:
             top_gasto = max(gastos_detalhados, key=lambda x: x['porcentagem'])
             if top_gasto['porcentagem'] > 30: # Limite para considerar um gasto excessivo
@@ -185,16 +180,14 @@ def dashboard(request):
                     'texto': f"Seus gastos com {top_gasto['nome']} representam {top_gasto['porcentagem']:.0f}% das despesas."
                 })
         
-        # 2. Potencial de investimento
-        if saldo > 1000: # Valor arbitrário para começar a sugerir investimento
-            ganho_anual = (saldo * Decimal('0.11')) # Exemplo de rendimento de 11% ao ano
+        if saldo > 1000: 
+            ganho_anual = (saldo * Decimal('0.11')) 
             recomendacoes.append({
                 'tipo': 'potencial',
                 'titulo': 'Potencial de investimento identificado:',
                 'texto': f"Com R$ {saldo:.2f} disponíveis, você pode investir em CDB e obter R$ {ganho_anual:.2f} anuais."
             })
 
-        # 3. Reserva de emergência
         media_gastos_mensais = sum(gastos_mensais) / len(gastos_mensais) if len(gastos_mensais) > 0 else 0
         reserva_recomendada = media_gastos_mensais * 6
         if saldo < reserva_recomendada:
@@ -204,7 +197,6 @@ def dashboard(request):
                 'texto': f"Seu saldo atual é de R$ {saldo:.2f}. A reserva ideal é de R$ {reserva_recomendada:.2f}."
             })
 
-        # 4. Oportunidade de economia em gastos variáveis
         if 'Lazer' in [g['nome'] for g in gastos_detalhados] and 'Lazer' != top_gasto['nome']:
             recomendacoes.append({
                 'tipo': 'oportunidade',
@@ -226,7 +218,7 @@ def dashboard(request):
         expenses_data = []
         gastos_detalhados = []
         transacoes_recentes = []
-        meses_labels = ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+        meses_labels = ['Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago']
         receitas_mensais = [0, 0, 0, 0, 0, 0]
         gastos_mensais = [0, 0, 0, 0, 0, 0]
         recomendacoes = []
