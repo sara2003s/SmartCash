@@ -75,6 +75,7 @@ def register_view(request):
                 user=user,
                 cpf_rg=cpf_rg,
                 celular=celular
+                
             )
 
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -511,6 +512,13 @@ def configuracoes(request):
     }
     return render(request, 'financas/configuracoes.html', context)
 
+@login_required
+def pagamento(request, plano):
+    context = {
+        'plano': plano,
+    }
+    return render(request, 'financas/pagamento.html', context)
+
 def inicio(request):
     planos = [
         {
@@ -573,7 +581,7 @@ def educacao(request):
     # Simulação de usuário
     user = {
         "username": "Sara",
-        "plan": "freemium"  # ou "pro" / "premium"
+        "plan": "premium"  # ou "pro" / "freemium"
     }
     
     is_pro = user['plan'] in ['pro', 'premium']
