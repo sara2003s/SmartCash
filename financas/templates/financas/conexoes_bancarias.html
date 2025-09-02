@@ -1,97 +1,134 @@
 {% extends "financas/base.html" %}
 {% load static %}
-{% block vars %}{% with sem_header=True %}{% endwith %}{% endblock %}
 {% block title %}Conexões Bancárias{% endblock %}
 
 {% block content %}
-<script src="https://unpkg.com/lucide@latest"></script>
-<h1 class="text-2xl font-bold mb-4">Conexões Bancárias</h1>
+<div class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Conexões Bancárias</h1>
 
-<!-- Grid principal -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-    <!-- Upload de Extratos -->
-    <div class="bg-white border rounded-lg shadow-sm p-8">
-        <!-- Header (alinhado à esquerda) -->
-        <h2 class="text-lg font-semibold flex items-center gap-2 mb-6 text-left">
-            <img src="{% static 'img/file-text (1).png' %}" alt="Upload" class="w-6 h-6">
-            Upload de Extratos
-        </h2>
+        <div class="bg-white border rounded-lg shadow-sm p-8">
+            <h2 class="text-lg font-semibold flex items-center gap-2 mb-6 text-left">
+                <i data-lucide="file-text" class="w-6 h-6 text-gray-800"></i>
+                Upload de Extratos
+            </h2>
+            <div class="flex flex-col items-center text-center">
+                <i data-lucide="file-text" class="w-20 h-20 mb-4 text-gray-300"></i>
+                <h3 class="text-base font-semibold mb-2">Envie seus extratos</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    Faça upload de PDFs ou arquivos CSV dos seus extratos bancários
+                </p>
 
-        <!-- Conteúdo central -->
-        <div class="flex flex-col items-center text-center">
-            <img src="{% static 'img/file-text (2).png' %}" alt="Upload" class="w-20 h-20 mb-4">
-            <h3 class="text-base font-semibold mb-2">Envie seus extratos</h3>
-            <p class="text-sm text-gray-600 mb-4">
-                Faça upload de PDFs ou arquivos CSV dos seus extratos bancários
-            </p>
+                <button onclick="abrirModal()"
+                    class="flex items-center gap-2 bg-[#0d1526] text-white px-4 py-2 rounded shadow hover:bg-[#1b2439] transition">
+                    <i data-lucide="upload" class="text-white w-5 h-5"></i> Upload Extrato
+                </button>
+            </div>
+        </div>
 
-            <!-- Botão -->
+        <div class="bg-white border rounded-lg shadow-sm p-8">
+            <h2 class="text-lg font-semibold flex items-center gap-2 mb-6 text-left">
+                <i data-lucide="credit-card" class="w-6 h-6 text-gray-800"></i>
+                Conectar Banco
+            </h2>
 
-            <button onclick="abrirModal()"
-                class="flex items-center gap-2 bg-[#0d1526] text-white px-4 py-2 rounded shadow hover:bg-[#1b2439] transition">
-                <i data-lucide="upload" class="text-white w-5 h-5"></i> Upload Extrato
-            </button>
+            <div class="flex flex-col items-center text-center">
+                <i data-lucide="credit-card" class="w-20 h-20 mb-4 text-blue-300"></i>
+                <h3 class="text-base font-semibold mb-2">Conexão automática</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    Conecte suas contas bancárias e cartões para sincronização automática
+                </p>
 
+                <a href="{% url 'financas:nova_conexao' %}"
+                    class="flex items-center justify-center gap-2 border w-full py-2 mb-2 rounded hover:bg-gray-50 transition">
+                    <span class="text-xl">+</span> Adicionar Conta Bancária
+                </a>
+
+                <a href="{% url 'financas:nova_conexao' %}"
+                    class="flex items-center justify-center gap-2 border w-full py-2 rounded hover:bg-gray-50 transition">
+                    <span class="text-xl">+</span> Adicionar Cartão de Crédito
+                </a>
+            </div>
         </div>
     </div>
 
-    <!-- Conectar Banco -->
-    <div class="bg-white border rounded-lg shadow-sm p-8">
-        <h2 class="text-lg font-semibold flex items-center gap-2 mb-6 text-left">
-            <img src="{% static 'img/credit-card (1).png' %}" alt="Banco" class="w-6 h-6">
-            Conectar Banco
-        </h2>
+   <div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-4">Conexões Ativas</h2>
 
-        <!-- Conteúdo central -->
-        <div class="flex flex-col items-center text-center">
-            <img src="{% static 'img/credit-card (3).png' %}" alt="Upload" class="w-20 h-20 mb-4">
-            <h3 class="text-base font-semibold mb-2">Conexão automática</h3>
-            <p class="text-sm text-gray-600 mb-4">
-                Conecte suas contas bancárias e cartões para sincronização automática
-            </p>
+    {% if contas_ativas or cartoes_ativos %}
+        <div class="flex flex-col gap-4">
+            {% for conta in contas_ativas %}
+            <div class="bg-gray-50 p-4 rounded-lg flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="landmark" class="w-7 h-7 text-blue-500"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">{{ conta.banco }}</h3>
+                        <p class="text-sm text-gray-600">Agência: {{ conta.agencia }} | Conta: {{ conta.numero_conta }}</p>
+                        <p class="text-xs text-gray-500">Conectado em {{ conta.data_conectar|date:"d/m/Y" }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="bg-gray-800 text-white text-xs font-semibold px-3 py-1 rounded-full">Ativo</span>
+                    <form action="{% url 'financas:excluir_conta' conta.id %}" method="post" class="inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="text-gray-400 hover:text-red-500">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
 
-            <a href="{% url 'financas:nova_conexao' %}"
-                class="flex items-center justify-center gap-2 border w-full py-2 mb-2 rounded hover:bg-gray-50 transition">
-                <span class="text-xl">+</span> Adicionar Conta Bancária
-            </a>
-
-            <a href="{% url 'financas:nova_conexao' %}"
-                class="flex items-center justify-center gap-2 border w-full py-2 rounded hover:bg-gray-50 transition">
-                <span class="text-xl">+</span> Adicionar Cartão de Crédito
-            </a>
+            {% for cartao in cartoes_ativos %}
+            <div class="bg-gray-50 p-4 rounded-lg flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="credit-card" class="w-7 h-7 text-purple-500"></i>
+                    <div>
+                        <h3 class="font-bold text-gray-800">{{ cartao.nome_cartao }}</h3>
+                        <p class="text-sm text-gray-600">{{ cartao.tipo }} **** {{ cartao.numero_cartao }}</p>
+                        <p class="text-xs text-gray-500">Conectado em {{ cartao.data_conectar|date:"d/m/Y" }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="bg-gray-800 text-white text-xs font-semibold px-3 py-1 rounded-full">Ativo</span>
+                    <form action="{% url 'financas:excluir_cartao' cartao.id %}" method="post" class="inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="text-gray-400 hover:text-red-500">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-    </div>
+    {% else %}
+        <div class="text-center text-gray-500 py-6">
+            <i data-lucide="banknote" class="w-10 h-10 mb-2 opacity-50"></i>
+            <p>Nenhuma conexão ativa. Conecte suas contas para começar.</p>
+        </div>
+    {% endif %}
+</div>
 
-    <!-- Conexões Ativas (ocupando as 2 colunas) -->
-    <div
-        class="bg-white border rounded-lg shadow-sm p-6 flex flex-col items-center text-center col-span-1 md:col-span-2">
-        <h2 class="text-lg font-semibold mb-4">Conexões Ativas</h2>
-        <img src="{% static 'img/credit-card (2).png' %}" alt="Sem conexão" class="w-10 h-10 mb-2 opacity-50">
-        <p class="text-sm text-gray-600">Nenhuma conexão ativa. Conecte suas contas para começar.</p>
-    </div>
-    <!-- Modal Importar Extrato -->
+
     <div id="modalExtrato" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
 
-            <!-- Botão Fechar -->
             <button onclick="fecharModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600">
-                <img src="/static/img/x.png" alt="Upload" class="w-6 h-6">
+                <i data-lucide="x" class="w-6 h-6"></i>
             </button>
 
-            <!-- Conteúdo do Modal -->
             <h2 class="text-xl font-medium flex items-center gap-2 mb-2">
-                <img src="/static/img/upload (1).png" alt="Upload" class="w-6 h-6">
+                <i data-lucide="upload" class="w-6 h-6"></i>
                 Upload de Extrato Bancário
             </h2>
             <p class="text-gray-600 text-sm mb-4">
                 Envie seu extrato em formato CSV, OFX ou XLSX para análise automática
             </p>
 
-            <!-- Caixa de Upload -->
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <div class="flex justify-center items-center h-20">
-                    <img src="/static/img/upload (1).png" alt="Upload" class="w-12 h-12">
+                    <i data-lucide="file-text" class="w-12 h-12 text-gray-400"></i>
                 </div>
                 <p class="font-semibold text-[#4f5866] mb-2">Arraste seu arquivo aqui</p>
                 <p class="text-[#4f5866] text-sm mb-6">ou clique para selecionar</p>
@@ -105,41 +142,39 @@
                 <p class="text-xs text-gray-400 mt-6">Formatos aceitos: CSV, XLSX, OFX (máx. 10MB)</p>
             </div>
 
-            <!-- Instruções -->
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6 text-sm">
-                <p class="font-semibold text-[#1e3a8a]"> Como obter seu extrato:</p>
-                <ul class="list-disc list-inside text-[#1e3a8a] mt-2">
+                <div class="flex items-center gap-1 font-semibold text-gray-700">
+                    <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
+                    <p class="font-semibold text-blue-900">Como obter seu extrato:</p>
+                </div>
+                <ul class="list-disc list-inside text-blue-800 mt-2">
                     <li>Acesse o app ou site do seu banco</li>
                     <li>Vá em "Extratos" ou "Movimentação"</li>
                     <li>Selecione o período desejado</li>
                     <li>Exporte em formato CSV, OFX ou XLSX</li>
                 </ul>
             </div>
-            <!-- Segurança -->
             <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-sm">
                 <div class="flex items-center gap-1 font-semibold text-gray-700">
-                    <img src="{% static 'img/info.png' %}" alt="informações" class="w-4 h-4">
-                    Segurança dos seus dados
+                    <i data-lucide="lock" class="w-4 h-4 text-gray-700"></i>
+                    <p class="font-semibold text-gray-700">Segurança dos seus dados</p>
                 </div>
                 <p class="text-gray-500 mt-1">
                     Seus extratos são processados localmente e criptografados.
                     Não armazenamos informações sensíveis como números de conta.
                 </p>
             </div>
-
         </div>
     </div>
-
 </div>
+
 <script>
     lucide.createIcons();
     function abrirModal() {
         document.getElementById('modalExtrato').classList.remove('hidden');
-
     }
     function fecharModal() {
         document.getElementById('modalExtrato').classList.add('hidden');
-
     }
 </script>
 {% endblock %}

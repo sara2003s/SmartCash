@@ -1,6 +1,6 @@
 from financas.models import Transacao, Meta, Profile, Categoria
 from django.db.models import Sum
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -382,9 +382,15 @@ def adicionar_dinheiro(request, meta_id):
 
 @login_required
 def conexoes_bancarias(request):    
-    return render(request, "financas/conexoes_bancarias.html",{
-        "sem_header": True        
-    })
+    contas = ContaBancaria.objects.filter(usuario=request.user).order_by('-data_conectar')
+    cartoes = CartaoDeCredito.objects.filter(usuario=request.user).order_by('-data_conectar')
+
+    context = {
+        'contas_ativas': contas,
+        'cartoes_ativos': cartoes,
+        "sem_header": True 
+    }
+    return render(request, "financas/conexoes_bancarias.html", context)
 
 
 @login_required
@@ -400,19 +406,14 @@ def conectar_conta(request):
         numero_conta = request.POST.get("numero_conta")
         agencia = request.POST.get("agencia")
 
-        # --- Validação de Backend ---
-        # 1. Verifique se os campos obrigatórios estão preenchidos
         if not banco or not numero_conta or not agencia:
             messages.error(request, "Todos os campos são obrigatórios.")
             return render(request, "financas/conectar_conta.html")
         
-        # 2. Verifique o formato dos campos (exemplo)
-        # O número da conta deve ter apenas números e um traço opcional
         if not re.match(r'^[0-9-]+$', numero_conta):
             messages.error(request, "O formato do número da conta é inválido.")
             return render(request, "financas/conectar_conta.html")
         
-        # A agência deve ter apenas 4 ou 5 dígitos
         if not re.match(r'^[0-9]{4,5}$', agencia):
             messages.error(request, "A agência deve conter 4 ou 5 dígitos numéricos.")
             return render(request, "financas/conectar_conta.html")
@@ -438,32 +439,31 @@ def conectar_conta(request):
 def conectar_cartao(request):
     if request.method == "POST":
         nome_cartao = request.POST.get("nome_cartao")
-        tipo_cartao = request.POST.get("tipo_cartao") # Acessa o novo campo
+        tipo = request.POST.get("tipo")
         numero_cartao = request.POST.get("numero_cartao")
-        validade = request.POST.get("validade") # Acessa o novo campo
-
-        if not nome_cartao or not tipo_cartao or not numero_cartao or not validade:
+        validade = request.POST.get("validade")
+        
+        if not nome_cartao or not tipo or not numero_cartao or not validade:
             messages.error(request, "Por favor, preencha todos os campos obrigatórios.")
             return render(request, "financas/conectar_cartao.html")
-
-        try:
-            CartaoDeCredito.objects.create(
-                usuario=request.user, 
-                nome_cartao=nome_cartao,
-                tipo=tipo_cartao,
-                validade=validade,
-                numero_cartao=numero_cartao
-            )
-            messages.success(request, "Cartão de crédito adicionado com sucesso!")
-            return redirect("financas:conexoes_bancarias")
-        except Exception as e:
-            messages.error(request, f"Erro ao adicionar cartão: {e}")
-            return render(request, "financas/conectar_cartao.html")
+            
+        #try:
+        CartaoDeCredito.objects.create(
+            usuario=request.user, 
+            nome_cartao=nome_cartao,
+            tipo=tipo,
+            validade=validade,
+            numero_cartao=numero_cartao
+        )
+        messages.success(request, "Cartão de crédito adicionado com sucesso!")
+        return redirect("financas:conexoes_bancarias")
+        #except Exception as e:
+        #    messages.error(request, f"Erro ao adicionar cartão: {e}")
+        #    return render(request, "financas/conectar_cartao.html")
     
     return render(request, "financas/conectar_cartao.html",{
         "sem_header":True
     })
-
 
 @login_required
 def educacao_2(request):
@@ -699,3 +699,20 @@ def exportar_dados(request):
         headers={'Content-Disposition': 'attachment; filename="dados_smartcash.csv"'},
     )
     return response
+
+
+@login_required
+def excluir_conta(request, pk):
+    conta = get_object_or_404(ContaBancaria, pk=pk, usuario=request.user)
+    if request.method == "POST":
+        conta.delete()
+        messages.success(request, "Conta bancária excluída com sucesso.")
+    return redirect("financas:conexoes_bancarias")
+
+@login_required
+def excluir_cartao(request, pk):
+    cartao = get_object_or_404(CartaoDeCredito, pk=pk, usuario=request.user)
+    if request.method == "POST":
+        cartao.delete()
+        messages.success(request, "Cartão de crédito excluído com sucesso.")
+    return redirect("financas:conexoes_bancarias")

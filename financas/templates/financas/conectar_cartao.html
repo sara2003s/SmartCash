@@ -30,17 +30,17 @@
             </div>
         </div>
 
-        <form action="" method="post">
+        <form action="{% url 'financas:conectar_cartao' %}" method="post">
             {% csrf_token %}
-            <div class="mb-6">
-                <label for="banco" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Cartão</label>
-                <select id="banco" name="banco" class="w-full rounded-md border border-gray-300 px-3 py-2">
-                    <option value="">Selecione o tipo</option>
-                    <option value="Visa">Visa</option>
-                    <option value="Mastercard">Mastercard</option>
-                    <option value="Elo">Elo</option>
-                </select>
-            </div>
+                 <div class="mb-6">
+                    <label for="tipo_cartao" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Cartão</label>
+                    <select id="tipo_cartao" name="tipo" class="w-full rounded-md border border-gray-300 px-3 py-2">
+                        <option value="">Selecione o tipo</option>
+                        <option value="Visa">Visa</option>
+                        <option value="Mastercard">Mastercard</option>
+                        <option value="Elo">Elo</option>
+                    </select>
+                </div>
             <div class="mb-6">
                 <div>
                     <label for="nome_cartao" class="block text-sm font-medium text-gray-700 mb-1">Nome no Cartão</label>

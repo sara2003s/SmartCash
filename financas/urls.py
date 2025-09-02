@@ -25,5 +25,7 @@ urlpatterns = [
     path('metas/adicionar-dinheiro/<int:meta_id>/', views.adicionar_dinheiro, name='adicionar_dinheiro'),
     path('configuracoes/exportar-dados/', views.exportar_dados, name='exportar_dados'),
     path('aulas/', views.pagina_aulas, name='aulas'),
+    path('conexoes/excluir/conta/<int:pk>/', views.excluir_conta, name='excluir_conta'),
+    path('conexoes/excluir/cartao/<int:pk>/', views.excluir_cartao, name='excluir_cartao'),
 ]
 

@@ -155,7 +155,7 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    <button
+                    <button onclick="abrirRegister()" 
                         class="w-full px-4 py-2 rounded text-white {% if plan.popular %}bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700{% else %}bg-gray-900 hover:bg-gray-800{% endif %}">
                         {{ plan.cta }}
                     </button>
@@ -278,54 +278,64 @@
             </div>
             <form id="form-email" method="post" action="{% url 'login' %}" class="space-y-4">
                 {% csrf_token %}
-
+            
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
                     <input type="email" name="email" required
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
                         placeholder="seu@email.com" />
                 </div>
-                <div>
+                   <div class="relative">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                    <input type="password" name="password" required
-                        class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                        placeholder="sua senha" />
+                    <div class="relative mb-3">
+                        <input type="password" name="password" id="register-password" placeholder="Senha"
+                            class="w-full border rounded px-3 py-2 pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('register-password', this)"
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800">
+                            <i data-lucide="eye" class="w-5 h-5 toggle-icon"></i>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit"
                     class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-4 py-2 font-semibold text-white">
                     Entrar
                 </button>
             </form>
-
+            
             <form id="form-usuario" method="post" action="{% url 'login' %}" class="space-y-4 hidden">
                 {% csrf_token %}
-
+            
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Usuário</label>
                     <input type="text" name="username" required
                         class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
                         placeholder="seu usuário" />
                 </div>
-                <div>
+                <div class="relative">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                    <input type="password" name="password" required
-                        class="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-                        placeholder="sua senha" />
+                    <div class="relative mb-3">
+                        <input type="password" name="password" id="register-password" placeholder="Senha"
+                            class="w-full border rounded px-3 py-2 pr-10">
+                        <button type="button" onclick="togglePasswordVisibility('register-password', this)"
+                            class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800">
+                            <i data-lucide="eye" class="w-5 h-5 toggle-icon"></i>
+                        </button>
+                    </div>
                 </div>
                 <button type="submit"
                     class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-green-600 px-4 py-2 font-semibold text-white">
                     Entrar
                 </button>
             </form>
-
+            
             <p class="text-sm text-center mt-4">
                 Não tem uma conta?
                 <a href="#" onclick="fecharModal(); abrirRegister();" class="text-blue-600 hover:underline">
                     Criar conta
                 </a>
             </p>
-        </div>
-    </div>
+            </div>
+            </div>
     <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         
         <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md relative" onclick="event.stopPropagation();">
