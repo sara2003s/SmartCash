@@ -120,7 +120,8 @@
         {% empty %}
         <li class="p-3 text-gray-500 text-center">Nenhuma recomendação disponível.</li>
         {% endfor %}
-
+        
+        {% if user.is_authenticated and user.profile.plan == 'free' %}
         <li class="p-3 bg-[#f6f6ff] border border-[#bfdbfe] rounded mt-auto">
             <div class="flex justify-between items-center p-4 rounded">
                 <div>
@@ -132,8 +133,10 @@
                 </button>
             </div>
         </li>
-    </ul>
-</div>
+        {% endif %}
+        
+        </ul>
+        </div>
         <div class="bg-white p-6 rounded-lg shadow">
             <h2 class="text-xl font-semibold mb-1">Distribuição de Gastos</h2>
             <p class="text-gray-500 mb-4">Veja como seus gastos estão distribuídos por categoria</p>

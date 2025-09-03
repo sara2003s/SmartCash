@@ -46,14 +46,17 @@ def register_view(request):
         password = request.POST.get("password")
         confirmar_senha = request.POST.get("confirmar_senha")
 
+        # Verificação de senha
         if password != confirmar_senha:
             messages.error(request, "As senhas não coincidem.")
             return redirect("financas:login")
         
+        # Campos obrigatórios
         if not nome_completo or not username or not email or not password:
             messages.error(request, "Todos os campos obrigatórios devem ser preenchidos.")
             return redirect("financas:login")
 
+        # Username e email únicos
         if User.objects.filter(username=username).exists():
             messages.error(request, "Este nome de usuário já está em uso.")
             return redirect("financas:login")
@@ -63,21 +66,26 @@ def register_view(request):
             return redirect("financas:login")
 
         try:
+            # Criação do usuário
             user = User.objects.create_user(username=username, email=email, password=password)
             
+            # Separar nome e sobrenome
             nomes = nome_completo.split(' ', 1)
             user.first_name = nomes[0]
             if len(nomes) > 1:
                 user.last_name = nomes[1]
             user.save()
 
-            Profile.objects.create(
+            # Criar ou recuperar o Profile
+            Profile.objects.get_or_create(
                 user=user,
-                cpf_rg=cpf_rg,
-                celular=celular
-                
+                defaults={
+                    "cpf_rg": cpf_rg,
+                    "celular": celular
+                }
             )
 
+            # Login automático
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, "Cadastro realizado com sucesso!")
             return redirect("financas:configuracao_inicial")
@@ -87,6 +95,13 @@ def register_view(request):
             return redirect("financas:login")
     
     return redirect("financas:login")
+
+
+def upgrade_plano(request, plano):
+    profile = request.user.profile
+    profile.plano = plano
+    profile.save()
+    return redirect('financas:configuracoes') 
 
 @login_required
 def configuracao_inicial(request):

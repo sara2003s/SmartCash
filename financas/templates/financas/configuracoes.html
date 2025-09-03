@@ -81,11 +81,24 @@
 
         <div class="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6 flex justify-between items-center">
             <div>
-                <strong>Plano Atual: Premium</strong>
+                <strong>Plano Atual: {{ request.user.profile.plano|title }}</strong>
+                {% if request.user.profile.plano == 'premium' %}
                 <p class="text-sm text-gray-600">Você tem acesso completo a todos os recursos premium</p>
+                {% elif request.user.profile.plano == 'pro' %}
+                <p class="text-sm text-gray-600">Você tem acesso a recursos avançados</p>
+                {% else %}
+                <p class="text-sm text-gray-600">Você tem acesso ao plano gratuito básico</p>
+                {% endif %}
             </div>
-            <span class="px-3 py-1 bg-[#0f172a] text-white text-xs rounded-md">PREMIUM</span>
+            <span class="px-3 py-1 
+                 {% if request.user.profile.plano == 'premium' %}bg-[#0f172a] text-white
+                 {% elif request.user.profile.plano == 'pro' %}bg-blue-600 text-white
+                 {% else %}bg-gray-300 text-gray-700{% endif %} 
+                 text-xs rounded-md">
+                {{ request.user.profile.plano|upper }}
+            </span>
         </div>
+
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -124,9 +137,11 @@
                         Suporte por email
                     </li>
                 </ul>
-                <button class="mt-auto bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800">
+                <a href="{% url 'financas:upgrade_plano' 'freemium' %}"
+                    class="mt-auto bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800">
                     Escolher Freemium
-                </button>
+                </a>
+
             </div>
 
             <div class="border-2 border-blue-400 rounded-lg p-6 flex flex-col relative text-center bg-[#eff6ff]">
@@ -175,9 +190,10 @@
                         Suporte prioritário (email + chat)
                     </li>
                 </ul>
-                <button class="mt-auto bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+                <a href="{% url 'financas:upgrade_plano' 'pro' %}"
+                    class="mt-auto bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
                     Escolher Pro
-                </button>
+                </a>
             </div>
 
             <div class="border-2 border-purple-400 rounded-lg p-6 flex flex-col relative text-center">
@@ -225,9 +241,16 @@
                         Suporte telefônico
                     </li>
                 </ul>
+                {% if request.user.profile.plano != 'premium' %}
+                <a href="{% url 'financas:upgrade_plano' 'premium' %}"
+                    class="mt-auto bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700">
+                    Escolher Premium
+                </a>
+                {% else %}
                 <button class="mt-auto bg-purple-300 text-white py-2 rounded-md cursor-not-allowed">
                     Plano Atual
                 </button>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -27,5 +27,7 @@ urlpatterns = [
     path('aulas/', views.pagina_aulas, name='aulas'),
     path('conexoes/excluir/conta/<int:pk>/', views.excluir_conta, name='excluir_conta'),
     path('conexoes/excluir/cartao/<int:pk>/', views.excluir_cartao, name='excluir_cartao'),
+    path('upgrade/<str:plano>/', views.upgrade_plano, name='upgrade_plano')
+
 ]
 

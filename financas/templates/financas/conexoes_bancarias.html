@@ -75,10 +75,6 @@ Bancárias{% endblock %} {% block content %}
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span
-            class="bg-gray-800 text-white text-xs font-semibold px-3 py-1 rounded-full leading-none"
-            >Ativo</span
-          >
           <form
             action="{% url 'financas:excluir_conta' conta.id %}"
             method="post"
@@ -111,10 +107,7 @@ Bancárias{% endblock %} {% block content %}
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span
-            class="bg-gray-800 text-white text-xs font-semibold px-3 py-1 rounded-full"
-            >Ativo</span
-          >
+
           <form
             action="{% url 'financas:excluir_cartao' cartao.id %}"
             method="post"

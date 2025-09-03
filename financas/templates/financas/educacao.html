@@ -95,7 +95,7 @@
                         <div class="flex items-center space-x-2">
                             <div
                                 class="w-12 h-12 bg-purple-100 flex items-center justify-center rounded-lg text-purple-600 text-xl">
-                                {% if item.icon == 'bar-chart' %}📊{% elif item.icon == 'trending-up' %}�{% elif item.icon == 'calculator' %}🧮{% elif item.icon == 'file-text' %}📄{% endif %}
+                                {% if item.icon == 'bar-chart' %}📊{% elif item.icon == 'trending-up' %} 📈{% elif item.icon == 'calculator' %}🧮{% elif item.icon == 'file-text' %}📄{% endif %}
                             </div>
                             <h3 class="font-bold" style="color: #212e3e;">{{ item.title }}</h3>
                         </div>
@@ -111,8 +111,8 @@
                         {% endfor %}
                     </ul>
                     <button
-                        class="w-full mt-2 rounded px-3 py-1 {% if is_pro %}bg-purple-500 text-white hover:bg-purple-600{% else %}border border-purple-500 text-purple-500 hover:bg-purple-50{% endif %}">
-                        {% if is_pro %}Acessar Conteúdo ▶️{% else %}Fazer Upgrade{% endif %}
+                        class="w-full mt-2 rounded px-3 py-1 {% if is_pro %}bg-[#262d3f] text-white hover:bg-purple-600{% else %}border border-purple-500 text-purple-500 hover:bg-purple-50{% endif %}">
+                        {% if is_pro %}Acessar Conteúdo {% else %}Fazer Upgrade{% endif %}
                     </button>
                 </div>
                 {% endfor %}
@@ -201,6 +201,8 @@
                                 Simular
                             </button>
                         </form>
+                        <div id="result" class="mt-4 p-4 bg-gray-50 rounded-md hidden">
+                </div>
                     </div>
             
                 </div>
@@ -245,6 +247,7 @@
                             <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">Calcular
                                 Aposentadoria</button>
                             </form>
+                             <div id="result" class="mt-4 p-4 bg-gray-50 rounded-md hidden"></div>
                             </div>
                             </div>
                             
@@ -287,6 +290,7 @@
                                             class="w-full px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition">Calcular
                                             Financiamento</button>
                                     </form>
+                                    <div id="result" class="mt-4 p-4 bg-gray-50 rounded-md hidden"></div>
                                 </div>
                             </div>
                             </div>
@@ -330,6 +334,7 @@
             <button type="submit"
                 class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition">Simular Investimento</button>
         </form>
+        <div id=result" class="mt-4 p-4 bg-gray-50 rounded-md hidden"></div>
     </div>
 </div>
 
@@ -369,6 +374,7 @@
             <button type="submit"
                 class="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">Calcular Reserva</button>
         </form>
+        <div id="result" class="mt-4 p-4 bg-gray-50 rounded-md hidden"></div>
     </div>
 </div>
 
@@ -401,8 +407,8 @@
                         <li>Alertas de oportunidades</li>
                     </ul>
                     <button
-                        class="w-full mt-2 rounded px-3 py-1 {% if is_pro %}bg-purple-500 text-white hover:bg-purple-600{% else %}border border-purple-500 text-purple-500 hover:bg-purple-50{% endif %}">
-                        {% if is_pro %}Acessar Conteúdo ▶️{% else %}Upgrade Pro{% endif %}
+                        class="w-full mt-2 rounded px-3 py-1 {% if is_pro %}bg-[#262d3f] text-white hover:bg-purple-600{% else %}border border-purple-500 text-purple-500 hover:bg-purple-50{% endif %}">
+                        {% if is_pro %}Acessar Conteúdo {% else %}Upgrade Pro{% endif %}
                     </button>
                 </div>
             </div>
@@ -415,105 +421,179 @@
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
     </style>
+<script>
+    // Ativa os ícones do Lucide
+    lucide.createIcons();
+    function showTab(tabId, element) {
+        // Esconde todo o conteúdo
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById(tabId).classList.remove('hidden');
 
-    <script>
-        // Ativa os ícones do Lucide
-        lucide.createIcons();
-        function showTab(tabId, element) {
-            // Esconde todo o conteúdo
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
+        // Remove o estilo da aba ativa de todos os botões
+        document.querySelectorAll('.py-2').forEach(btn => btn.classList.remove('active-tab'));
 
-            // Remove o estilo da aba ativa de todos os botões
-            document.querySelectorAll('.py-2').forEach(btn => btn.classList.remove('active-tab'));
+        // Adiciona o estilo apenas ao botão clicado
+        element.classList.add('active-tab');
+    }
 
-            // Adiciona o estilo apenas ao botão clicado
-            element.classList.add('active-tab');
+    // Garante que a aba 'Fundamentos' seja a inicial ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+        showTab('basics', document.getElementById('tab-basics'));
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Função genérica para alternar formulários
+        function toggleForm(buttonId, formId) {
+            const button = document.getElementById(buttonId);
+            const form = document.getElementById(formId);
+            button.addEventListener('click', function () {
+                form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+            });
         }
 
-        // Garante que a aba 'Fundamentos' seja a inicial ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            showTab('basics', document.getElementById('tab-basics'));
+        // Alterna todos os formulários
+        toggleForm('showCalculatorForm', 'calculatorForm');
+        toggleForm('showRetirementForm', 'retirementForm');
+        toggleForm('showFinancingForm', 'financingForm');
+        toggleForm('showInvestmentForm', 'investmentForm');
+        toggleForm('showEmergencyForm', 'emergencyForm');
+
+        // --- Juros Compostos ---
+        const calculatorForm = document.querySelector('#calculatorForm form');
+        const calculatorResult = document.getElementById('result');
+
+        calculatorForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const P = parseFloat(document.getElementById('initialValue').value);
+            const r = parseFloat(document.getElementById('interestRate').value) / 100;
+            const t = parseFloat(document.getElementById('period').value);
+
+            if (isNaN(P) || isNaN(r) || isNaN(t)) {
+                calculatorResult.innerHTML = `<p class="text-red-600 font-semibold">Preencha todos os campos corretamente!</p>`;
+            } else {
+                const FV = P * Math.pow((1 + r), t);
+                calculatorResult.innerHTML = `
+                <p class="font-bold text-gray-900">Resultado:</p>
+                <p>O valor final após <span class="font-semibold">${t} anos</span> será: 
+                <span class="text-blue-600 font-semibold">R$ ${FV.toFixed(2)}</span></p>
+            `;
+            }
+            calculatorResult.classList.remove('hidden');
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const showButton = document.getElementById('showCalculatorForm');
-            const calculatorForm = document.getElementById('calculatorForm');
+        // --- Simulador de Aposentadoria ---
+        const retirementFormEl = document.querySelector('#retirementForm form');
+        const retirementResult = document.createElement('div');
+        retirementResult.className = 'mt-4 p-4 bg-gray-50 rounded-md hidden';
+        document.getElementById('retirementForm').appendChild(retirementResult);
 
-            showButton.addEventListener('click', function () {
-                // Verifica o estado atual e inverte
-                if (calculatorForm.style.display === 'none' || calculatorForm.style.display === '') {
-                    calculatorForm.style.display = 'block';
-                } else {
-                    calculatorForm.style.display = 'none';
-                }
-            });
-        });
-        document.addEventListener('DOMContentLoaded', function () {
-            const showRetirementButton = document.getElementById('showRetirementForm');
-            const retirementForm = document.getElementById('retirementForm');
+        retirementFormEl.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const currentAge = parseInt(document.getElementById('currentAge').value);
+            const retirementAge = parseInt(document.getElementById('retirementAge').value);
+            const monthlyContribution = parseFloat(document.getElementById('monthlyContribution').value);
 
-            showRetirementButton.addEventListener('click', function () {
-                // Verifica o estado atual e inverte
-                if (retirementForm.style.display === 'none' || retirementForm.style.display === '') {
-                    retirementForm.style.display = 'block';
-                } else {
-                    retirementForm.style.display = 'none';
-                }
-            });
+            if (isNaN(currentAge) || isNaN(retirementAge) || isNaN(monthlyContribution)) {
+                retirementResult.innerHTML = `<p class="text-red-600 font-semibold">Preencha todos os campos corretamente!</p>`;
+            } else if (retirementAge <= currentAge) {
+                retirementResult.innerHTML = `<p class="text-red-600 font-semibold">A idade de aposentadoria deve ser maior que a atual.</p>`;
+            } else {
+                const years = retirementAge - currentAge;
+                const totalSaved = monthlyContribution * 12 * years;
+                retirementResult.innerHTML = `
+                <p class="font-bold text-gray-900">Resultado:</p>
+                <p>Ao se aposentar aos <span class="font-semibold">${retirementAge}</span> anos, você terá acumulado aproximadamente: 
+                <span class="text-green-600 font-semibold">R$ ${totalSaved.toFixed(2)}</span></p>
+            `;
+            }
+            retirementResult.classList.remove('hidden');
         });
-            document.addEventListener('DOMContentLoaded', function() {
-        // Encontra o botão e o formulário do simulador de financiamento
-        const showFinancingButton = document.getElementById('showFinancingForm');
-        const financingForm = document.getElementById('financingForm');
-        
-        // Adiciona um listener para o botão da Calculadora de Financiamento
-        if (showFinancingButton) {
-            showFinancingButton.addEventListener('click', function() {
-                // Verifica o estado atual e inverte
-                if (financingForm.style.display === 'none' || financingForm.style.display === '') {
-                    financingForm.style.display = 'block';
-                } else {
-                    financingForm.style.display = 'none';
+
+        // --- Financiamento ---
+        const financingFormEl = document.querySelector('#financingForm form');
+        const financingResult = document.createElement('div');
+        financingResult.className = 'mt-4 p-4 bg-gray-50 rounded-md hidden';
+        document.getElementById('financingForm').appendChild(financingResult);
+
+        financingFormEl.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const rate = parseFloat(document.getElementById('interestRateFinancing').value) / 100;
+            const term = parseInt(document.getElementById('loanTerm').value);
+
+            if (isNaN(loanAmount) || isNaN(rate) || isNaN(term)) {
+                financingResult.innerHTML = `<p class="text-red-600 font-semibold">Preencha todos os campos corretamente!</p>`;
+            } else {
+                // Fórmula simplificada: Valor total aproximado sem amortização detalhada
+                const totalPay = loanAmount * Math.pow(1 + rate, term);
+                financingResult.innerHTML = `
+                <p class="font-bold text-gray-900">Resultado:</p>
+                <p>O valor total a ser pago após <span class="font-semibold">${term} anos</span> será: 
+                <span class="text-orange-600 font-semibold">R$ ${totalPay.toFixed(2)}</span></p>
+            `;
+            }
+            financingResult.classList.remove('hidden');
+        });
+
+        // --- Investimento ---
+        const investmentFormEl = document.querySelector('#investmentForm form');
+        const investmentResult = document.createElement('div');
+        investmentResult.className = 'mt-4 p-4 bg-gray-50 rounded-md hidden';
+        document.getElementById('investmentForm').appendChild(investmentResult);
+
+        investmentFormEl.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const initial = parseFloat(document.getElementById('initialInvestment').value);
+            const monthly = parseFloat(document.getElementById('monthlyContribution').value);
+            const rate = parseFloat(document.getElementById('expectedReturn').value) / 100;
+            const years = 10; // ou você pode adicionar input para período
+
+            if (isNaN(initial) || isNaN(monthly) || isNaN(rate)) {
+                investmentResult.innerHTML = `<p class="text-red-600 font-semibold">Preencha todos os campos corretamente!</p>`;
+            } else {
+                let FV = initial;
+                for (let i = 0; i < years; i++) {
+                    FV = (FV + monthly * 12) * (1 + rate);
                 }
-            });
-        }
+                investmentResult.innerHTML = `
+                <p class="font-bold text-gray-900">Resultado:</p>
+                <p>Após <span class="font-semibold">${years} anos</span>, seu investimento será aproximadamente: 
+                <span class="text-purple-600 font-semibold">R$ ${FV.toFixed(2)}</span></p>
+            `;
+            }
+            investmentResult.classList.remove('hidden');
+        });
+
+        // --- Reserva de Emergência ---
+        const emergencyFormEl = document.querySelector('#emergencyForm form');
+        const emergencyResult = document.createElement('div');
+        emergencyResult.className = 'mt-4 p-4 bg-gray-50 rounded-md hidden';
+        document.getElementById('emergencyForm').appendChild(emergencyResult);
+
+        emergencyFormEl.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value);
+            const profile = document.getElementById('riskProfile').value;
+
+            if (isNaN(monthlyExpenses)) {
+                emergencyResult.innerHTML = `<p class="text-red-600 font-semibold">Preencha os gastos corretamente!</p>`;
+            } else {
+                let months = 6; // conservador
+                if (profile === 'moderado') months = 3;
+                else if (profile === 'arrojado') months = 1;
+
+                const reserve = monthlyExpenses * months;
+                emergencyResult.innerHTML = `
+                <p class="font-bold text-gray-900">Resultado:</p>
+                <p>Você deve ter uma reserva de aproximadamente: 
+                <span class="text-red-600 font-semibold">R$ ${reserve.toFixed(2)}</span> (${months} meses de gastos)</p>
+            `;
+            }
+            emergencyResult.classList.remove('hidden');
+        });
     });
-      document.addEventListener('DOMContentLoaded', function() {
-        // Encontra o botão e o formulário do simulador de investimento
-        const showInvestmentButton = document.getElementById('showInvestmentForm');
-        const investmentForm = document.getElementById('investmentForm');
-        
-        // Adiciona um listener para o botão do Simulador de Investimentos
-        if (showInvestmentButton) {
-            showInvestmentButton.addEventListener('click', function() {
-                // Verifica o estado atual e inverte
-                if (investmentForm.style.display === 'none' || investmentForm.style.display === '') {
-                    investmentForm.style.display = 'block';
-                } else {
-                    investmentForm.style.display = 'none';
-                }
-            });
-        }
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        // Encontra o botão e o formulário do planejador de emergência
-        const showEmergencyButton = document.getElementById('showEmergencyForm');
-        const emergencyForm = document.getElementById('emergencyForm');
-        
-        // Adiciona um listener para o botão "Planejar"
-        if (showEmergencyButton) {
-            showEmergencyButton.addEventListener('click', function() {
-                // Verifica o estado atual e inverte
-                if (emergencyForm.style.display === 'none' || emergencyForm.style.display === '') {
-                    emergencyForm.style.display = 'block';
-                } else {
-                    emergencyForm.style.display = 'none';
-                }
-            });
-        }
-    });
-    </script>
+
+</script>
 
 </body>
 
